@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Container,
@@ -43,6 +43,29 @@ export default function Funds() {
   const [statusFilter, setStatusFilter] = useState('all'); // all, active, inactive
   const limit = 100; // Show 100 schemes per page
 
+  // Initialize filter from URL query params or localStorage on mount
+  useEffect(() => {
+    const urlStatus = router.query.status;
+    const savedStatus = localStorage.getItem('fundsStatusFilter');
+    
+    if (urlStatus && ['all', 'active', 'inactive'].includes(urlStatus)) {
+      setStatusFilter(urlStatus);
+    } else if (savedStatus && ['all', 'active', 'inactive'].includes(savedStatus)) {
+      setStatusFilter(savedStatus);
+      // Update URL to reflect the saved filter
+      router.replace({ pathname: '/funds', query: { status: savedStatus } }, undefined, { shallow: true });
+    }
+  }, []);
+
+  // Save filter to localStorage and URL whenever it changes
+  useEffect(() => {
+    if (statusFilter) {
+      localStorage.setItem('fundsStatusFilter', statusFilter);
+      // Update URL query params
+      router.replace({ pathname: '/funds', query: { status: statusFilter } }, undefined, { shallow: true });
+    }
+  }, [statusFilter]);
+
   // Debounce search
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -74,6 +97,7 @@ export default function Funds() {
   };
 
   const handleCardClick = (schemeCode) => {
+    // Navigate to scheme details page
     router.push(`/scheme/${schemeCode}`);
   };
 
@@ -190,8 +214,29 @@ export default function Funds() {
           />
         </Paper>
 
+        {/* Indexing State */}
+        {data?.indexing && (
+          <Paper
+            sx={{
+              p: 4,
+              textAlign: 'center',
+              background: 'rgba(255,255,255,0.9)',
+            }}
+          >
+            <CircularProgress sx={{ mb: 2 }} />
+            <Typography variant="h6" sx={{ mb: 1 }}>
+              Building Fund Status Index
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              We're analyzing funds to determine their active/inactive status.
+              This happens once per day and takes a few minutes.
+              Please check back shortly or switch to "All" filter.
+            </Typography>
+          </Paper>
+        )}
+
         {/* Loading State */}
-        {isLoading && (
+        {isLoading && !data?.indexing && (
           <Grid container spacing={3}>
             {[...Array(limit)].map((_, index) => (
               <Grid item xs={12} sm={6} md={4} key={index}>

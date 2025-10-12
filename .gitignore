@@ -31,3 +31,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# fund status index (optional - can be committed or ignored)
+# Uncomment the line below if you want GitHub Actions to commit the file
+# public/fund-status.json
+# public/fund-status-metadata.json
+# public/fund-status-url.txt
