@@ -1,10 +1,8 @@
 import axios from 'axios';
-import connectDB from '../../lib/mongodb';
-import Fund from '../../models/Fund';
 import { cache } from '../../utils/cache';
 
-const CACHE_KEY = 'all_active_schemes';
-const CACHE_TTL = 12 * 60 * 60 * 1000; // 12 hours
+const CACHE_KEY = 'all_schemes_from_api';
+const CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours cache
 
 export default async function handler(req, res) {
   if (req.method !== 'GET') {
@@ -12,44 +10,18 @@ export default async function handler(req, res) {
   }
 
   try {
-    const { page = 1, limit = 20, search = '', activeOnly = 'true' } = req.query;
+    const { page = 1, limit = 20, search = '', status = 'all' } = req.query;
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
-    const filterActive = activeOnly === 'true';
 
+    // Get all schemes from cache or fetch from API
     let allSchemes = cache.get(CACHE_KEY);
 
-    // Try to get from MongoDB first
     if (!allSchemes) {
-      try {
-        await connectDB();
-        
-        const query = filterActive ? { isActive: true } : {};
-        const fundsFromDB = await Fund.find(query)
-          .select('schemeCode schemeName fundHouse category isActive latestNAV latestNAVDate')
-          .lean();
-
-        if (fundsFromDB && fundsFromDB.length > 0) {
-          allSchemes = fundsFromDB.map(fund => ({
-            schemeCode: fund.schemeCode,
-            schemeName: fund.schemeName,
-            fundHouse: fund.fundHouse,
-            category: fund.category,
-            isActive: fund.isActive,
-            latestNAV: fund.latestNAV,
-            latestNAVDate: fund.latestNAVDate
-          }));
-          
-          cache.set(CACHE_KEY, allSchemes, CACHE_TTL);
-        }
-      } catch (dbError) {
-        console.error('MongoDB error, falling back to API:', dbError.message);
-      }
-    }
-
-    // Fallback to API if MongoDB is empty or unavailable
-    if (!allSchemes || allSchemes.length === 0) {
-      const response = await axios.get('https://api.mfapi.in/mf');
+      console.log('Fetching schemes from external API...');
+      const response = await axios.get('https://api.mfapi.in/mf', {
+        timeout: 10000 // 10 second timeout
+      });
       allSchemes = response.data;
 
       // Process and enrich data
@@ -80,23 +52,42 @@ export default async function handler(req, res) {
           category = 'Gilt';
         }
 
+        // Determine if scheme is active based on name patterns
+        // Inactive schemes typically have keywords like "closed", "matured", "wound up"
+        const isActive = !(
+          nameLower.includes('closed') ||
+          nameLower.includes('matured') ||
+          nameLower.includes('wound up') ||
+          nameLower.includes('merged') ||
+          nameLower.includes('discontinued')
+        );
+
         return {
           schemeCode: scheme.schemeCode,
           schemeName: name,
           fundHouse: fundHouse,
           category: category,
-          isActive: true // Assume active from API
+          isActive: isActive
         };
       });
 
+      // Cache the processed data
       cache.set(CACHE_KEY, allSchemes, CACHE_TTL);
+      console.log(`Cached ${allSchemes.length} schemes`);
+    }
+
+    // Filter by status (all, active, inactive)
+    let filteredSchemes = allSchemes;
+    if (status === 'active') {
+      filteredSchemes = allSchemes.filter(scheme => scheme.isActive === true);
+    } else if (status === 'inactive') {
+      filteredSchemes = allSchemes.filter(scheme => scheme.isActive === false);
     }
 
     // Filter by search term
-    let filteredSchemes = allSchemes;
     if (search) {
       const searchLower = search.toLowerCase();
-      filteredSchemes = allSchemes.filter(scheme =>
+      filteredSchemes = filteredSchemes.filter(scheme =>
         scheme.schemeName.toLowerCase().includes(searchLower) ||
         scheme.fundHouse.toLowerCase().includes(searchLower) ||
         scheme.category.toLowerCase().includes(searchLower)

@@ -1,5 +1,4 @@
-import connectDB from '../../../lib/mongodb';
-import Fund from '../../../models/Fund';
+import axios from 'axios';
 import { calculateReturns } from '../../../utils/calculations';
 
 export default async function handler(req, res) {
@@ -10,15 +9,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    await connectDB();
+    // Fetch fund data from external API
+    const response = await axios.get(`https://api.mfapi.in/mf/${schemeCode}`, {
+      timeout: 10000
+    });
 
-    const fund = await Fund.findOne({ schemeCode }).lean();
-
-    if (!fund) {
-      return res.status(404).json({ error: 'Fund not found' });
-    }
-
-    const navHistory = fund.navHistory || [];
+    const fundData = response.data;
+    const navHistory = fundData.data || [];
 
     if (navHistory.length === 0) {
       return res.status(404).json({ error: 'No NAV data available' });
@@ -57,12 +54,12 @@ export default async function handler(req, res) {
 
     res.status(200).json({
       schemeCode,
-      schemeName: fund.schemeName,
+      schemeName: fundData.meta?.scheme_name || 'Unknown',
       performance
     });
 
   } catch (error) {
     console.error('Performance API error:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: 'Internal server error', details: error.message });
   }
 }

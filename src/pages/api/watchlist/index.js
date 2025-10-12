@@ -1,6 +1,6 @@
+import axios from 'axios';
 import connectDB from '../../../lib/mongodb';
 import Watchlist from '../../../models/Watchlist';
-import Fund from '../../../models/Fund';
 
 export default async function handler(req, res) {
   const userId = 'default-user'; // In production, get from session/auth
@@ -20,46 +20,83 @@ export default async function handler(req, res) {
         return res.status(200).json({ watchlist: [] });
       }
 
-      // Get fund details for each watchlist item
-      const schemeCodes = watchlistItems.map(item => item.schemeCode);
-      const funds = await Fund.find({ schemeCode: { $in: schemeCodes } }).lean();
+      // Fetch fund details from external API for each watchlist item
+      const watchlist = await Promise.all(
+        watchlistItems.map(async (item) => {
+          try {
+            const response = await axios.get(`https://api.mfapi.in/mf/${item.schemeCode}`, {
+              timeout: 5000
+            });
+            const fundData = response.data;
+            const navHistory = fundData.data || [];
+            
+            // Extract fund details
+            const name = fundData.meta?.scheme_name || item.schemeName || 'Unknown';
+            let fundHouse = 'Unknown';
+            const parts = name.split('-');
+            if (parts.length > 0) {
+              fundHouse = parts[0].trim();
+            }
 
-      // Create a map for quick lookup
-      const fundMap = {};
-      funds.forEach(fund => {
-        fundMap[fund.schemeCode] = fund;
-      });
+            let category = 'Other';
+            const nameLower = name.toLowerCase();
+            if (nameLower.includes('equity') || nameLower.includes('stock')) {
+              category = 'Equity';
+            } else if (nameLower.includes('debt') || nameLower.includes('bond')) {
+              category = 'Debt';
+            } else if (nameLower.includes('hybrid') || nameLower.includes('balanced')) {
+              category = 'Hybrid';
+            } else if (nameLower.includes('liquid') || nameLower.includes('money market')) {
+              category = 'Liquid';
+            } else if (nameLower.includes('elss') || nameLower.includes('tax')) {
+              category = 'ELSS';
+            }
 
-      // Combine watchlist with fund data
-      const watchlist = watchlistItems.map(item => {
-        const fund = fundMap[item.schemeCode];
-        return {
-          _id: item._id,
-          schemeCode: item.schemeCode,
-          addedDate: item.addedDate,
-          schemeName: fund?.schemeName || 'Unknown',
-          fundHouse: fund?.fundHouse || 'Unknown',
-          category: fund?.category || 'Other',
-          latestNAV: fund?.latestNAV || null,
-          latestNAVDate: fund?.latestNAVDate || null,
-          isActive: fund?.isActive || false
-        };
-      });
+            return {
+              _id: item._id,
+              schemeCode: item.schemeCode,
+              addedDate: item.addedDate,
+              schemeName: name,
+              fundHouse: fundHouse,
+              category: category,
+              latestNAV: navHistory.length > 0 ? navHistory[0].nav : null,
+              latestNAVDate: navHistory.length > 0 ? navHistory[0].date : null,
+              isActive: true
+            };
+          } catch (error) {
+            console.error(`Error fetching fund ${item.schemeCode}:`, error.message);
+            return {
+              _id: item._id,
+              schemeCode: item.schemeCode,
+              addedDate: item.addedDate,
+              schemeName: item.schemeName || 'Unknown',
+              fundHouse: 'Unknown',
+              category: 'Other',
+              latestNAV: null,
+              latestNAVDate: null,
+              isActive: false
+            };
+          }
+        })
+      );
 
       res.status(200).json({ watchlist });
 
     } else if (req.method === 'POST') {
       // Add fund to watchlist
-      const { schemeCode } = req.body;
+      const { schemeCode, schemeName } = req.body;
 
       if (!schemeCode) {
         return res.status(400).json({ error: 'schemeCode is required' });
       }
 
-      // Check if fund exists
-      const fund = await Fund.findOne({ schemeCode });
-      if (!fund) {
-        return res.status(404).json({ error: 'Fund not found' });
+      // Verify fund exists by checking external API
+      try {
+        await axios.get(`https://api.mfapi.in/mf/${schemeCode}`, {
+          timeout: 5000
+        });
+      } catch (error) {
+        return res.status(404).json({ error: 'Fund not found in external API' });
       }
 
       // Check if already in watchlist
@@ -72,6 +109,7 @@ export default async function handler(req, res) {
       const watchlistItem = await Watchlist.create({
         userId,
         schemeCode,
+        schemeName: schemeName || null,
         addedDate: new Date()
       });
 

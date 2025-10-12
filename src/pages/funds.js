@@ -14,8 +14,13 @@ import {
   InputAdornment,
   Paper,
   Skeleton,
+  ToggleButtonGroup,
+  ToggleButton,
 } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 
@@ -35,7 +40,8 @@ export default function Funds() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const limit = 20;
+  const [statusFilter, setStatusFilter] = useState('all'); // all, active, inactive
+  const limit = 100; // Show 100 schemes per page
 
   // Debounce search
   const handleSearchChange = (e) => {
@@ -52,8 +58,15 @@ export default function Funds() {
   };
 
   const { data, error, isLoading } = useSWR(
-    `/api/mf?page=${page}&limit=${limit}&search=${debouncedSearch}`
+    `/api/mf?page=${page}&limit=${limit}&search=${debouncedSearch}&status=${statusFilter}`
   );
+
+  const handleStatusChange = (event, newStatus) => {
+    if (newStatus !== null) {
+      setStatusFilter(newStatus);
+      setPage(1); // Reset to page 1 when filter changes
+    }
+  };
 
   const handlePageChange = (event, value) => {
     setPage(value);
@@ -92,6 +105,59 @@ export default function Funds() {
             Search and discover from thousands of mutual fund schemes
           </Typography>
         </Box>
+
+        {/* Status Filter */}
+        <Paper
+          elevation={0}
+          sx={{
+            mb: 3,
+            p: 2,
+            background: 'rgba(255,255,255,0.9)',
+            backdropFilter: 'blur(10px)',
+            border: '2px solid rgba(184,164,217,0.2)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 2,
+          }}
+        >
+          <Typography variant="body2" sx={{ fontWeight: 600, color: 'text.secondary' }}>
+            Filter:
+          </Typography>
+          <ToggleButtonGroup
+            value={statusFilter}
+            exclusive
+            onChange={handleStatusChange}
+            aria-label="fund status filter"
+            sx={{
+              '& .MuiToggleButton-root': {
+                px: 3,
+                py: 1,
+                border: '2px solid rgba(184,164,217,0.3)',
+                '&.Mui-selected': {
+                  background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+                  color: 'white',
+                  fontWeight: 600,
+                  '&:hover': {
+                    background: 'linear-gradient(135deg, #A294C9 0%, #94C9B4 100%)',
+                  },
+                },
+              },
+            }}
+          >
+            <ToggleButton value="all" aria-label="all funds">
+              <AllInclusiveIcon sx={{ mr: 1, fontSize: 20 }} />
+              All
+            </ToggleButton>
+            <ToggleButton value="active" aria-label="active funds">
+              <CheckCircleIcon sx={{ mr: 1, fontSize: 20 }} />
+              Active
+            </ToggleButton>
+            <ToggleButton value="inactive" aria-label="inactive funds">
+              <CancelIcon sx={{ mr: 1, fontSize: 20 }} />
+              Inactive
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Paper>
 
         {/* Search Bar */}
         <Paper
@@ -225,15 +291,30 @@ export default function Funds() {
                             >
                               {scheme.fundHouse}
                             </Typography>
-                            <Chip
-                              label={scheme.category}
-                              size="small"
-                              sx={{
-                                background: categoryColors[scheme.category] || '#D4D4D4',
-                                color: 'white',
-                                fontWeight: 600,
-                              }}
-                            />
+                            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                              <Chip
+                                label={scheme.category}
+                                size="small"
+                                sx={{
+                                  background: categoryColors[scheme.category] || '#D4D4D4',
+                                  color: 'white',
+                                  fontWeight: 600,
+                                }}
+                              />
+                              <Chip
+                                icon={scheme.isActive ? <CheckCircleIcon /> : <CancelIcon />}
+                                label={scheme.isActive ? 'Active' : 'Inactive'}
+                                size="small"
+                                sx={{
+                                  background: scheme.isActive ? '#88C785' : '#E88585',
+                                  color: 'white',
+                                  fontWeight: 600,
+                                  '& .MuiChip-icon': {
+                                    color: 'white',
+                                  },
+                                }}
+                              />
+                            </Box>
                           </CardContent>
                         </CardActionArea>
                       </Card>

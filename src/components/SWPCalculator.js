@@ -93,7 +93,7 @@ export default function SWPCalculator({ schemeCode, navHistory }) {
   };
 
   const CustomTooltip = ({ active, payload }) => {
-    if (active && payload && payload.length) {
+    if (active && payload && payload.length > 0) {
       return (
         <Box
           sx={{
@@ -111,11 +111,13 @@ export default function SWPCalculator({ schemeCode, navHistory }) {
             })}
           </Typography>
           <Typography variant="body2" color="secondary">
-            Balance: ₹{payload[0].value.toLocaleString()}
+            Balance: ₹{payload[0]?.value?.toLocaleString() || '0'}
           </Typography>
-          <Typography variant="body2" color="primary">
-            Withdrawn: ₹{payload[1].value.toLocaleString()}
-          </Typography>
+          {payload[1] && (
+            <Typography variant="body2" color="primary">
+              Withdrawn: ₹{payload[1]?.value?.toLocaleString() || '0'}
+            </Typography>
+          )}
         </Box>
       );
     }

@@ -40,7 +40,10 @@ export default function SchemeDetail() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ schemeCode: code }),
+        body: JSON.stringify({ 
+          schemeCode: code,
+          schemeName: data?.meta?.scheme_name || data?.schemeName || 'Unknown'
+        }),
       });
 
       const result = await response.json();
