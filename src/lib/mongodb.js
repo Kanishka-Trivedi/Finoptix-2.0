@@ -20,10 +20,22 @@ async function connectDB() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
+      serverSelectionTimeoutMS: 10000, // Timeout after 10s instead of 30s default
+      socketTimeoutMS: 45000, // Close sockets after 45s of inactivity
+      family: 4, // Use IPv4, skip trying IPv6
+      maxPoolSize: 10,
+      minPoolSize: 2,
+      retryWrites: true,
+      retryReads: true,
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      console.log('[MongoDB] Successfully connected to database');
       return mongoose;
+    }).catch((error) => {
+      console.error('[MongoDB] Connection error:', error.message);
+      cached.promise = null;
+      throw error;
     });
   }
 
@@ -31,6 +43,7 @@ async function connectDB() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
+    console.error('[MongoDB] Failed to establish connection:', e.message);
     throw e;
   }
 
