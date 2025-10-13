@@ -162,7 +162,15 @@ export default function Funds() {
                 px: 3,
                 py: 1,
                 border: '2px solid rgba(108, 92, 231, 0.2)',
-                borderRadius: '12px',
+                '&:first-child': {
+                  borderRadius: '8px 0 0 8px',
+                },
+                '&:nth-child(2)': {
+                  borderRadius: '0',
+                },
+                '&:last-child': {
+                  borderRadius: '0 8px 8px 0',
+                },
                 '&.Mui-selected': {
                   background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
                   color: 'white',
