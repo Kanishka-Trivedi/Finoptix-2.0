@@ -23,16 +23,17 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import AllInclusiveIcon from '@mui/icons-material/AllInclusive';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
+import BlobBackground from '../components/BlobBackground';
 
 const categoryColors = {
-  Equity: '#B8A4D9',
-  Debt: '#A4D9C4',
-  Hybrid: '#F5D4A4',
-  Liquid: '#A4C4F5',
-  ELSS: '#F5A4A4',
-  Index: '#D4A4F5',
-  Gilt: '#A4F5D4',
-  Other: '#D4D4D4',
+  Equity: '#6C5CE7',
+  Debt: '#00D2D3',
+  Hybrid: '#A29BFE',
+  Liquid: '#00D2A0',
+  ELSS: '#FF6B9D',
+  Index: '#FFB800',
+  Gilt: '#7FEFEF',
+  Other: '#636E72',
 };
 
 export default function Funds() {
@@ -105,18 +106,21 @@ export default function Funds() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
         py: 4,
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
-      <Container maxWidth="lg">
+      <BlobBackground variant="default" />
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Typography
             variant="h3"
             sx={{
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -136,9 +140,10 @@ export default function Funds() {
           sx={{
             mb: 3,
             p: 2,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid rgba(184,164,217,0.2)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(108, 92, 231, 0.15)',
+            borderRadius: '24px',
             display: 'flex',
             alignItems: 'center',
             gap: 2,
@@ -156,13 +161,15 @@ export default function Funds() {
               '& .MuiToggleButton-root': {
                 px: 3,
                 py: 1,
-                border: '2px solid rgba(184,164,217,0.3)',
+                border: '2px solid rgba(108, 92, 231, 0.2)',
+                borderRadius: '12px',
                 '&.Mui-selected': {
-                  background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+                  background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
                   color: 'white',
                   fontWeight: 600,
+                  boxShadow: '0 4px 12px rgba(108, 92, 231, 0.25)',
                   '&:hover': {
-                    background: 'linear-gradient(135deg, #A294C9 0%, #94C9B4 100%)',
+                    background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
                   },
                 },
               },
@@ -189,9 +196,10 @@ export default function Funds() {
           sx={{
             mb: 4,
             p: 2,
-            background: 'rgba(255,255,255,0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid rgba(184,164,217,0.2)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(108, 92, 231, 0.15)',
+            borderRadius: '24px',
           }}
         >
           <TextField
@@ -202,7 +210,7 @@ export default function Funds() {
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">
-                  <SearchIcon color="primary" />
+                  <SearchIcon sx={{ color: '#6C5CE7' }} />
                 </InputAdornment>
               ),
             }}
@@ -301,12 +309,16 @@ export default function Funds() {
                         elevation={0}
                         sx={{
                           height: '100%',
-                          background: `linear-gradient(135deg, ${categoryColors[scheme.category] || '#D4D4D4'}15 0%, ${categoryColors[scheme.category] || '#D4D4D4'}05 100%)`,
-                          border: `2px solid ${categoryColors[scheme.category] || '#D4D4D4'}30`,
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(20px)',
+                          border: `2px solid ${categoryColors[scheme.category] || '#636E72'}30`,
+                          borderRadius: '24px',
                           transition: 'all 0.3s ease',
+                          position: 'relative',
+                          overflow: 'hidden',
                           '&:hover': {
                             transform: 'translateY(-4px)',
-                            boxShadow: `0 8px 24px ${categoryColors[scheme.category] || '#D4D4D4'}30`,
+                            boxShadow: `0 12px 32px ${categoryColors[scheme.category] || '#636E72'}40`,
                           },
                         }}
                       >
@@ -341,9 +353,11 @@ export default function Funds() {
                                 label={scheme.category}
                                 size="small"
                                 sx={{
-                                  background: categoryColors[scheme.category] || '#D4D4D4',
+                                  background: `linear-gradient(135deg, ${categoryColors[scheme.category] || '#636E72'} 0%, ${categoryColors[scheme.category] || '#636E72'}DD 100%)`,
                                   color: 'white',
                                   fontWeight: 600,
+                                  borderRadius: '12px',
+                                  boxShadow: `0 2px 8px ${categoryColors[scheme.category] || '#636E72'}40`,
                                 }}
                               />
                               <Chip

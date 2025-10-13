@@ -38,6 +38,7 @@ import StepUpSIPCalculator from '../../components/StepUpSIPCalculator';
 import StepUpSWPCalculator from '../../components/StepUpSWPCalculator';
 import LumpsumCalculator from '../../components/LumpsumCalculator';
 import RollingReturns from '../../components/RollingReturns';
+import BlobBackground from '../../components/BlobBackground';
 
 export default function SchemeDetail() {
   const router = useRouter();
@@ -190,16 +191,29 @@ export default function SchemeDetail() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
         py: 4,
+        position: 'relative',
+        overflow: 'hidden',
       }}
     >
+      <BlobBackground variant="default" />
       <Container maxWidth="lg">
         {/* Back Button and Actions */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3, position: 'relative', zIndex: 1 }}>
           <Button
             startIcon={<ArrowBackIcon />}
             onClick={() => router.push('/funds')}
+            sx={{
+              background: 'rgba(255, 255, 255, 0.9)',
+              backdropFilter: 'blur(10px)',
+              border: '2px solid rgba(108, 92, 231, 0.2)',
+              color: '#6C5CE7',
+              '&:hover': {
+                background: 'rgba(255, 255, 255, 1)',
+                border: '2px solid rgba(108, 92, 231, 0.4)',
+              },
+            }}
           >
             Back to Funds
           </Button>
@@ -208,6 +222,14 @@ export default function SchemeDetail() {
             startIcon={addingToWatchlist ? <CircularProgress size={20} color="inherit" /> : <BookmarkAddIcon />}
             onClick={handleAddToWatchlist}
             disabled={addingToWatchlist}
+            sx={{
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
+              boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
+                boxShadow: '0 12px 32px rgba(108, 92, 231, 0.4)',
+              },
+            }}
           >
             Add to Watchlist
           </Button>
@@ -219,10 +241,16 @@ export default function SchemeDetail() {
           sx={{
             p: 4,
             mb: 4,
-            background: 'linear-gradient(135deg, rgba(184,164,217,0.1) 0%, rgba(164,217,196,0.1) 100%)',
-            border: '2px solid rgba(184,164,217,0.3)',
+            background: 'rgba(255, 255, 255, 0.95)',
+            backdropFilter: 'blur(20px)',
+            border: '2px solid rgba(108, 92, 231, 0.15)',
+            borderRadius: '24px',
+            position: 'relative',
+            overflow: 'hidden',
+            zIndex: 1,
           }}
         >
+          <BlobBackground variant="card" />
           <Typography
             variant="h4"
             sx={{
@@ -248,9 +276,11 @@ export default function SchemeDetail() {
               <Chip
                 label={metadata.schemeCategory}
                 sx={{
-                  background: '#A4D9C4',
+                  background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
                   color: 'white',
                   fontWeight: 600,
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 12px rgba(108, 92, 231, 0.25)',
                 }}
               />
             </Grid>
@@ -258,9 +288,11 @@ export default function SchemeDetail() {
               <Chip
                 label={metadata.schemeType}
                 sx={{
-                  background: '#F5D4A4',
+                  background: 'linear-gradient(135deg, #00D2D3 0%, #7FEFEF 100%)',
                   color: 'white',
                   fontWeight: 600,
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 12px rgba(0, 210, 211, 0.25)',
                 }}
               />
             </Grid>
@@ -284,10 +316,13 @@ export default function SchemeDetail() {
               elevation={0}
               sx={{
                 p: 2,
-                background: 'rgba(255,255,255,0.9)',
-                border: '2px solid rgba(184,164,217,0.2)',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(20px)',
+                border: '2px solid rgba(108, 92, 231, 0.15)',
+                borderRadius: '24px',
                 position: 'sticky',
                 top: 20,
+                zIndex: 1,
               }}
             >
               <List sx={{ p: 0 }}>
@@ -297,22 +332,25 @@ export default function SchemeDetail() {
                       selected={activeTab === item.id}
                       onClick={() => setActiveTab(item.id)}
                       sx={{
-                        borderRadius: 2,
+                        borderRadius: '16px',
+                        transition: 'all 0.3s ease',
                         '&.Mui-selected': {
-                          background: 'linear-gradient(135deg, rgba(184,164,217,0.2) 0%, rgba(164,217,196,0.2) 100%)',
-                          border: '2px solid rgba(184,164,217,0.4)',
+                          background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
+                          color: 'white',
+                          boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)',
                           '&:hover': {
-                            background: 'linear-gradient(135deg, rgba(184,164,217,0.25) 0%, rgba(164,217,196,0.25) 100%)',
+                            background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
+                            boxShadow: '0 12px 32px rgba(108, 92, 231, 0.4)',
                           },
                         },
                         '&:hover': {
-                          background: 'rgba(184,164,217,0.1)',
+                          background: 'rgba(108, 92, 231, 0.08)',
                         },
                       }}
                     >
                       <ListItemIcon
                         sx={{
-                          color: activeTab === item.id ? '#B8A4D9' : 'text.secondary',
+                          color: activeTab === item.id ? 'white' : '#6C5CE7',
                           minWidth: 40,
                         }}
                       >
@@ -321,8 +359,8 @@ export default function SchemeDetail() {
                       <ListItemText
                         primary={item.label}
                         primaryTypographyProps={{
-                          fontWeight: activeTab === item.id ? 600 : 400,
-                          color: activeTab === item.id ? 'text.primary' : 'text.secondary',
+                          fontWeight: activeTab === item.id ? 600 : 500,
+                          color: activeTab === item.id ? 'white' : 'text.primary',
                         }}
                       />
                     </ListItemButton>
@@ -345,18 +383,28 @@ export default function SchemeDetail() {
                         elevation={0}
                         sx={{
                           p: 3,
-                          background: 'linear-gradient(135deg, rgba(184,164,217,0.1) 0%, rgba(184,164,217,0.05) 100%)',
-                          border: '2px solid rgba(184,164,217,0.3)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(20px)',
+                          border: '2px solid rgba(108, 92, 231, 0.15)',
+                          borderRadius: '24px',
                           textAlign: 'center',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: '0 12px 32px rgba(108, 92, 231, 0.2)',
+                          },
                         }}
                       >
-                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        <BlobBackground variant="small" />
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1, position: 'relative', zIndex: 1 }}>
                           Latest NAV
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#B8A4D9', mb: 0.5 }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#6C5CE7', mb: 0.5, position: 'relative', zIndex: 1 }}>
                           ₹{stats.latest}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography variant="caption" color="text.secondary" sx={{ position: 'relative', zIndex: 1 }}>
                           {stats.latestDate}
                         </Typography>
                       </Paper>
@@ -366,15 +414,24 @@ export default function SchemeDetail() {
                         elevation={0}
                         sx={{
                           p: 3,
-                          background: 'linear-gradient(135deg, rgba(168,217,164,0.1) 0%, rgba(168,217,164,0.05) 100%)',
-                          border: '2px solid rgba(168,217,164,0.3)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(20px)',
+                          border: '2px solid rgba(0, 210, 160, 0.15)',
+                          borderRadius: '24px',
                           textAlign: 'center',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: '0 12px 32px rgba(0, 210, 160, 0.2)',
+                          },
                         }}
                       >
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                           Highest (1Y)
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#88C785' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#00D2A0' }}>
                           ₹{stats.highest}
                         </Typography>
                       </Paper>
@@ -384,15 +441,24 @@ export default function SchemeDetail() {
                         elevation={0}
                         sx={{
                           p: 3,
-                          background: 'linear-gradient(135deg, rgba(245,164,164,0.1) 0%, rgba(245,164,164,0.05) 100%)',
-                          border: '2px solid rgba(245,164,164,0.3)',
+                          background: 'rgba(255, 255, 255, 0.95)',
+                          backdropFilter: 'blur(20px)',
+                          border: '2px solid rgba(255, 107, 157, 0.15)',
+                          borderRadius: '24px',
                           textAlign: 'center',
+                          position: 'relative',
+                          overflow: 'hidden',
+                          transition: 'all 0.3s ease',
+                          '&:hover': {
+                            transform: 'translateY(-4px)',
+                            boxShadow: '0 12px 32px rgba(255, 107, 157, 0.2)',
+                          },
                         }}
                       >
                         <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                           Lowest (1Y)
                         </Typography>
-                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#E88585' }}>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#FF6B9D' }}>
                           ₹{stats.lowest}
                         </Typography>
                       </Paper>
@@ -406,11 +472,16 @@ export default function SchemeDetail() {
                   sx={{
                     p: 3,
                     mb: 3,
-                    background: 'rgba(255,255,255,0.9)',
-                    border: '2px solid rgba(184,164,217,0.2)',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '2px solid rgba(108, 92, 231, 0.15)',
+                    borderRadius: '24px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    zIndex: 1,
                   }}
                 >
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, position: 'relative', zIndex: 1 }}>
                     NAV History (Last 1 Year)
                   </Typography>
                   <NAVChart navHistory={navHistory} />
@@ -421,11 +492,16 @@ export default function SchemeDetail() {
                   elevation={0}
                   sx={{
                     p: 3,
-                    background: 'rgba(255,255,255,0.9)',
-                    border: '2px solid rgba(164,217,196,0.2)',
+                    background: 'rgba(255, 255, 255, 0.95)',
+                    backdropFilter: 'blur(20px)',
+                    border: '2px solid rgba(108, 92, 231, 0.15)',
+                    borderRadius: '24px',
+                    position: 'relative',
+                    overflow: 'hidden',
+                    zIndex: 1,
                   }}
                 >
-                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600, position: 'relative', zIndex: 1 }}>
                     Returns
                   </Typography>
                   <ReturnsTable schemeCode={code} />

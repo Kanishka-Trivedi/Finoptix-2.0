@@ -7,6 +7,7 @@ import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { keyframes } from '@mui/system';
+import BlobBackground from '../components/BlobBackground';
 
 const fadeIn = keyframes`
   from {
@@ -36,28 +37,28 @@ export default function Home() {
       icon: <AccountBalanceIcon sx={{ fontSize: 48 }} />,
       title: 'Explore Funds',
       description: 'Browse thousands of active mutual fund schemes',
-      color: '#B8A4D9',
+      color: '#6C5CE7',
       link: '/funds',
     },
     {
       icon: <BookmarkIcon sx={{ fontSize: 48 }} />,
       title: 'Watchlist',
       description: 'Track performance of your favorite funds',
-      color: '#A4D9C4',
+      color: '#00D2D3',
       link: '/watchlist',
     },
     {
       icon: <AccountBalanceWalletIcon sx={{ fontSize: 48 }} />,
       title: 'Virtual Portfolio',
       description: 'Simulate and track your SIP investments',
-      color: '#F5D4A4',
+      color: '#A29BFE',
       link: '/virtual-portfolio',
     },
     {
       icon: <TrendingUpIcon sx={{ fontSize: 48 }} />,
       title: 'Calculators',
       description: 'SIP, SWP calculators with precise returns',
-      color: '#A4C4F5',
+      color: '#00D2A0',
       link: '/funds',
     },
   ];
@@ -66,36 +67,12 @@ export default function Home() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
         position: 'relative',
         overflow: 'hidden',
       }}
     >
-      {/* Decorative circles */}
-      <Box
-        sx={{
-          position: 'absolute',
-          top: '-100px',
-          right: '-100px',
-          width: '400px',
-          height: '400px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(184,164,217,0.2) 0%, transparent 70%)',
-          animation: `${float} 6s ease-in-out infinite`,
-        }}
-      />
-      <Box
-        sx={{
-          position: 'absolute',
-          bottom: '-150px',
-          left: '-150px',
-          width: '500px',
-          height: '500px',
-          borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(164,217,196,0.2) 0%, transparent 70%)',
-          animation: `${float} 8s ease-in-out infinite`,
-        }}
-      />
+      <BlobBackground variant="default" />
 
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Hero Section */}
@@ -112,7 +89,7 @@ export default function Home() {
             sx={{
               fontSize: { xs: '2.5rem', md: '4rem' },
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -141,10 +118,12 @@ export default function Home() {
               fontSize: '1.2rem',
               px: 5,
               py: 2,
-              boxShadow: '0 8px 24px rgba(184,164,217,0.3)',
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
+              boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)',
               '&:hover': {
                 transform: 'scale(1.05)',
-                boxShadow: '0 12px 32px rgba(184,164,217,0.4)',
+                background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
+                boxShadow: '0 12px 32px rgba(108, 92, 231, 0.4)',
               },
               transition: 'all 0.3s ease',
             }}
@@ -164,14 +143,18 @@ export default function Home() {
                   p: 4,
                   height: '100%',
                   textAlign: 'center',
-                  background: `linear-gradient(135deg, ${feature.color}15 0%, ${feature.color}05 100%)`,
+                  background: 'rgba(255, 255, 255, 0.95)',
+                  backdropFilter: 'blur(20px)',
                   border: `2px solid ${feature.color}30`,
+                  borderRadius: '24px',
                   animation: `${fadeIn} 1s ease-out ${index * 0.1}s backwards`,
                   transition: 'all 0.3s ease',
                   cursor: 'pointer',
+                  position: 'relative',
+                  overflow: 'hidden',
                   '&:hover': {
                     transform: 'translateY(-8px)',
-                    boxShadow: `0 12px 32px ${feature.color}30`,
+                    boxShadow: `0 12px 32px ${feature.color}40`,
                   },
                 }}
               >
@@ -207,21 +190,27 @@ export default function Home() {
             elevation={0}
             sx={{
               p: 6,
-              background: 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
-              backdropFilter: 'blur(10px)',
-              border: '2px solid rgba(184,164,217,0.2)',
+              background: 'rgba(255, 255, 255, 0.95)',
+              backdropFilter: 'blur(20px)',
+              border: '2px solid rgba(108, 92, 231, 0.15)',
+              borderRadius: '24px',
+              position: 'relative',
+              overflow: 'hidden',
             }}
           >
+            <BlobBackground variant="card" />
             <Grid container spacing={4} textAlign="center">
               <Grid item xs={12} md={4}>
                 <Typography
                   variant="h3"
                   sx={{
                     fontWeight: 800,
-                    background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+                    background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   10,000+
@@ -235,10 +224,12 @@ export default function Home() {
                   variant="h3"
                   sx={{
                     fontWeight: 800,
-                    background: 'linear-gradient(135deg, #A4D9C4 0%, #F5D4A4 100%)',
+                    background: 'linear-gradient(135deg, #00D2D3 0%, #7FEFEF 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   Real-time
@@ -252,10 +243,12 @@ export default function Home() {
                   variant="h3"
                   sx={{
                     fontWeight: 800,
-                    background: 'linear-gradient(135deg, #F5D4A4 0%, #A4C4F5 100%)',
+                    background: 'linear-gradient(135deg, #00D2A0 0%, #7FEFCF 100%)',
                     backgroundClip: 'text',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
+                    position: 'relative',
+                    zIndex: 1,
                   }}
                 >
                   Accurate
