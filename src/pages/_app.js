@@ -3,6 +3,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SWRConfig } from 'swr';
 import theme from '../theme/theme';
+import Header from '../components/Header';
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -33,6 +34,7 @@ function MyApp({ Component, pageProps }) {
     >
       <ThemeProvider theme={theme}>
         <CssBaseline />
+        <Header />
         <Component {...pageProps} />
       </ThemeProvider>
     </SWRConfig>

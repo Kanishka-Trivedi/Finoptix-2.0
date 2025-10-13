@@ -84,8 +84,7 @@ export default function Home() {
             animation: `${fadeIn} 1s ease-out`,
           }}
         >
-          <Typography
-            variant="h1"
+          <Box
             sx={{
               fontSize: { xs: '2.5rem', md: '4rem' },
               fontWeight: 800,
@@ -97,7 +96,7 @@ export default function Home() {
             }}
           >
             Mutual Fund Explorer
-          </Typography>
+          </Box>
           <Typography
             variant="h5"
             color="text.secondary"
