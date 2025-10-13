@@ -12,21 +12,35 @@ import {
   Divider,
   Alert,
   Snackbar,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
 } from '@mui/material';
 import { useRouter } from 'next/router';
 import useSWR from 'swr';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import BookmarkAddIcon from '@mui/icons-material/BookmarkAdd';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import CalculateIcon from '@mui/icons-material/Calculate';
+import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ShowChartIcon from '@mui/icons-material/ShowChart';
+import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import NAVChart from '../../components/NAVChart';
 import ReturnsTable from '../../components/ReturnsTable';
 import SIPCalculator from '../../components/SIPCalculator';
 import SWPCalculator from '../../components/SWPCalculator';
+import StepUpSIPCalculator from '../../components/StepUpSIPCalculator';
+import StepUpSWPCalculator from '../../components/StepUpSWPCalculator';
 
 export default function SchemeDetail() {
   const router = useRouter();
   const { code } = router.query;
   const [addingToWatchlist, setAddingToWatchlist] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [activeTab, setActiveTab] = useState('overview');
 
   const { data, error, isLoading } = useSWR(
     code ? `/api/scheme/${code}` : null
@@ -138,6 +152,34 @@ export default function SchemeDetail() {
 
   const { metadata, navHistory } = data;
 
+  // Calculate price statistics
+  const calculateStats = () => {
+    if (!navHistory || navHistory.length === 0) return null;
+    
+    const navValues = navHistory.map(item => parseFloat(item.nav));
+    const latestNAV = navValues[0];
+    const highestNAV = Math.max(...navValues);
+    const lowestNAV = Math.min(...navValues);
+    
+    return {
+      latest: latestNAV.toFixed(2),
+      highest: highestNAV.toFixed(2),
+      lowest: lowestNAV.toFixed(2),
+      latestDate: navHistory[0].date
+    };
+  };
+
+  const stats = calculateStats();
+
+  const menuItems = [
+    { id: 'overview', label: 'Overview', icon: <TrendingUpIcon /> },
+    { id: 'sip', label: 'SIP Calculator', icon: <CalculateIcon /> },
+    { id: 'swp', label: 'SWP Calculator', icon: <AccountBalanceWalletIcon /> },
+    { id: 'stepup-sip', label: 'Step-up SIP', icon: <ShowChartIcon /> },
+    { id: 'stepup-swp', label: 'Step-up SWP', icon: <TrendingDownIcon /> },
+    { id: 'returns', label: 'Returns', icon: <BarChartIcon /> },
+  ];
+
   return (
     <Box
       sx={{
@@ -228,47 +270,199 @@ export default function SchemeDetail() {
           )}
         </Paper>
 
-        {/* NAV Chart and Returns */}
-        <Grid container spacing={3} sx={{ mb: 4 }}>
-          <Grid item xs={12} md={8}>
+        {/* Main Content with Sidebar */}
+        <Grid container spacing={3}>
+          {/* Sidebar */}
+          <Grid item xs={12} md={3}>
             <Paper
               elevation={0}
               sx={{
-                p: 3,
+                p: 2,
                 background: 'rgba(255,255,255,0.9)',
                 border: '2px solid rgba(184,164,217,0.2)',
+                position: 'sticky',
+                top: 20,
               }}
             >
-              <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                NAV History (Last 1 Year)
-              </Typography>
-              <NAVChart navHistory={navHistory} />
+              <List sx={{ p: 0 }}>
+                {menuItems.map((item) => (
+                  <ListItem key={item.id} disablePadding sx={{ mb: 1 }}>
+                    <ListItemButton
+                      selected={activeTab === item.id}
+                      onClick={() => setActiveTab(item.id)}
+                      sx={{
+                        borderRadius: 2,
+                        '&.Mui-selected': {
+                          background: 'linear-gradient(135deg, rgba(184,164,217,0.2) 0%, rgba(164,217,196,0.2) 100%)',
+                          border: '2px solid rgba(184,164,217,0.4)',
+                          '&:hover': {
+                            background: 'linear-gradient(135deg, rgba(184,164,217,0.25) 0%, rgba(164,217,196,0.25) 100%)',
+                          },
+                        },
+                        '&:hover': {
+                          background: 'rgba(184,164,217,0.1)',
+                        },
+                      }}
+                    >
+                      <ListItemIcon
+                        sx={{
+                          color: activeTab === item.id ? '#B8A4D9' : 'text.secondary',
+                          minWidth: 40,
+                        }}
+                      >
+                        {item.icon}
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontWeight: activeTab === item.id ? 600 : 400,
+                          color: activeTab === item.id ? 'text.primary' : 'text.secondary',
+                        }}
+                      />
+                    </ListItemButton>
+                  </ListItem>
+                ))}
+              </List>
             </Paper>
           </Grid>
-          <Grid item xs={12} md={4}>
-            <Paper
-              elevation={0}
-              sx={{
-                p: 3,
-                background: 'rgba(255,255,255,0.9)',
-                border: '2px solid rgba(164,217,196,0.2)',
-              }}
-            >
-              <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
-                Returns
-              </Typography>
-              <ReturnsTable schemeCode={code} />
-            </Paper>
-          </Grid>
-        </Grid>
 
-        {/* Calculators */}
-        <Grid container spacing={3}>
-          <Grid item xs={12} lg={6}>
-            <SIPCalculator schemeCode={code} navHistory={navHistory} />
-          </Grid>
-          <Grid item xs={12} lg={6}>
-            <SWPCalculator schemeCode={code} navHistory={navHistory} />
+          {/* Content Area */}
+          <Grid item xs={12} md={9}>
+            {/* Overview Tab */}
+            {activeTab === 'overview' && (
+              <Box>
+                {/* Price Statistics */}
+                {stats && (
+                  <Grid container spacing={3} sx={{ mb: 3 }}>
+                    <Grid item xs={12} sm={4}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 3,
+                          background: 'linear-gradient(135deg, rgba(184,164,217,0.1) 0%, rgba(184,164,217,0.05) 100%)',
+                          border: '2px solid rgba(184,164,217,0.3)',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          Latest NAV
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#B8A4D9', mb: 0.5 }}>
+                          ₹{stats.latest}
+                        </Typography>
+                        <Typography variant="caption" color="text.secondary">
+                          {stats.latestDate}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 3,
+                          background: 'linear-gradient(135deg, rgba(168,217,164,0.1) 0%, rgba(168,217,164,0.05) 100%)',
+                          border: '2px solid rgba(168,217,164,0.3)',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          Highest (1Y)
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#88C785' }}>
+                          ₹{stats.highest}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                    <Grid item xs={12} sm={4}>
+                      <Paper
+                        elevation={0}
+                        sx={{
+                          p: 3,
+                          background: 'linear-gradient(135deg, rgba(245,164,164,0.1) 0%, rgba(245,164,164,0.05) 100%)',
+                          border: '2px solid rgba(245,164,164,0.3)',
+                          textAlign: 'center',
+                        }}
+                      >
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                          Lowest (1Y)
+                        </Typography>
+                        <Typography variant="h4" sx={{ fontWeight: 700, color: '#E88585' }}>
+                          ₹{stats.lowest}
+                        </Typography>
+                      </Paper>
+                    </Grid>
+                  </Grid>
+                )}
+
+                {/* NAV Chart */}
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    mb: 3,
+                    background: 'rgba(255,255,255,0.9)',
+                    border: '2px solid rgba(184,164,217,0.2)',
+                  }}
+                >
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                    NAV History (Last 1 Year)
+                  </Typography>
+                  <NAVChart navHistory={navHistory} />
+                </Paper>
+
+                {/* Returns */}
+                <Paper
+                  elevation={0}
+                  sx={{
+                    p: 3,
+                    background: 'rgba(255,255,255,0.9)',
+                    border: '2px solid rgba(164,217,196,0.2)',
+                  }}
+                >
+                  <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                    Returns
+                  </Typography>
+                  <ReturnsTable schemeCode={code} />
+                </Paper>
+              </Box>
+            )}
+
+            {/* SIP Calculator Tab */}
+            {activeTab === 'sip' && (
+              <SIPCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
+            {/* SWP Calculator Tab */}
+            {activeTab === 'swp' && (
+              <SWPCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
+            {/* Step-up SIP Calculator Tab */}
+            {activeTab === 'stepup-sip' && (
+              <StepUpSIPCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
+            {/* Step-up SWP Calculator Tab */}
+            {activeTab === 'stepup-swp' && (
+              <StepUpSWPCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
+            {/* Returns Tab */}
+            {activeTab === 'returns' && (
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 3,
+                  background: 'rgba(255,255,255,0.9)',
+                  border: '2px solid rgba(164,217,196,0.2)',
+                }}
+              >
+                <Typography variant="h6" sx={{ mb: 3, fontWeight: 600 }}>
+                  Returns Analysis
+                </Typography>
+                <ReturnsTable schemeCode={code} />
+              </Paper>
+            )}
           </Grid>
         </Grid>
       </Container>
