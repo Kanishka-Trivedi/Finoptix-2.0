@@ -28,12 +28,16 @@ import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import ShowChartIcon from '@mui/icons-material/ShowChart';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import AccountBalanceIcon from '@mui/icons-material/AccountBalance';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import NAVChart from '../../components/NAVChart';
 import ReturnsTable from '../../components/ReturnsTable';
 import SIPCalculator from '../../components/SIPCalculator';
 import SWPCalculator from '../../components/SWPCalculator';
 import StepUpSIPCalculator from '../../components/StepUpSIPCalculator';
 import StepUpSWPCalculator from '../../components/StepUpSWPCalculator';
+import LumpsumCalculator from '../../components/LumpsumCalculator';
+import RollingReturns from '../../components/RollingReturns';
 
 export default function SchemeDetail() {
   const router = useRouter();
@@ -174,9 +178,11 @@ export default function SchemeDetail() {
   const menuItems = [
     { id: 'overview', label: 'Overview', icon: <TrendingUpIcon /> },
     { id: 'sip', label: 'SIP Calculator', icon: <CalculateIcon /> },
+    { id: 'lumpsum', label: 'Lumpsum', icon: <AccountBalanceIcon /> },
     { id: 'swp', label: 'SWP Calculator', icon: <AccountBalanceWalletIcon /> },
     { id: 'stepup-sip', label: 'Step-up SIP', icon: <ShowChartIcon /> },
     { id: 'stepup-swp', label: 'Step-up SWP', icon: <TrendingDownIcon /> },
+    { id: 'rolling-returns', label: 'Rolling Returns', icon: <TimelineIcon /> },
     { id: 'returns', label: 'Returns', icon: <BarChartIcon /> },
   ];
 
@@ -432,6 +438,11 @@ export default function SchemeDetail() {
               <SIPCalculator schemeCode={code} navHistory={navHistory} />
             )}
 
+            {/* Lumpsum Calculator Tab */}
+            {activeTab === 'lumpsum' && (
+              <LumpsumCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
             {/* SWP Calculator Tab */}
             {activeTab === 'swp' && (
               <SWPCalculator schemeCode={code} navHistory={navHistory} />
@@ -445,6 +456,11 @@ export default function SchemeDetail() {
             {/* Step-up SWP Calculator Tab */}
             {activeTab === 'stepup-swp' && (
               <StepUpSWPCalculator schemeCode={code} navHistory={navHistory} />
+            )}
+
+            {/* Rolling Returns Tab */}
+            {activeTab === 'rolling-returns' && (
+              <RollingReturns schemeCode={code} navHistory={navHistory} />
             )}
 
             {/* Returns Tab */}
