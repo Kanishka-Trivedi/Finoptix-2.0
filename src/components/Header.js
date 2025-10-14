@@ -94,7 +94,9 @@ const Header = () => {
                   mr: 2,
                   p: 1,
                   borderRadius: 2,
+                  cursor: 'pointer',
                 }}
+                onClick={() => handleNavigation('/')}
               >
                 <TrendingUpIcon sx={{ mr: 1, color: 'white', fontSize: 28 }} />
                 <Typography

@@ -8,6 +8,7 @@ import BookmarkIcon from '@mui/icons-material/Bookmark';
 import AccountBalanceWalletIcon from '@mui/icons-material/AccountBalanceWallet';
 import { keyframes } from '@mui/system';
 import BlobBackground from '../components/BlobBackground';
+import SplitText from '../components/SplitText';
 
 const fadeIn = keyframes`
   from {
@@ -88,14 +89,26 @@ export default function Home() {
             sx={{
               fontSize: { xs: '2.5rem', md: '4rem' },
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
-              backgroundClip: 'text',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
               mb: 2,
+              textAlign: 'center',
+              // Apply gradient to the entire text container
+              position: 'relative',
             }}
           >
-            Mutual Fund Explorer
+            <Box
+              sx={{
+                background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
+                backgroundClip: 'text',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              <SplitText
+                text="Mutual Fund Explorer"
+                delay={80}
+                duration={800}
+              />
+            </Box>
           </Box>
           <Typography
             variant="h5"

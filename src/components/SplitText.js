@@ -1,101 +1,69 @@
-import { useEffect, useRef } from 'react';
-import { gsap } from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
-gsap.registerPlugin(ScrollTrigger);
+import { useMemo } from 'react';
 
 const SplitText = ({
   text,
   className = '',
   delay = 100,
-  duration = 0.6,
-  ease = 'power3.out',
-  splitType = 'chars',
-  from = { opacity: 0, y: 40 },
-  to = { opacity: 1, y: 0 },
-  threshold = 0.1,
-  rootMargin = '-100px',
-  textAlign = 'left',
-  onLetterAnimationComplete
+  duration = 600,
 }) => {
-  const textRef = useRef(null);
-
-  useEffect(() => {
-    if (!textRef.current || !text) return;
-
-    // Split text into characters manually
-    const chars = text.split('');
-    const charElements = [];
-
-    // Clear existing content and create character spans
-    textRef.current.innerHTML = '';
-
-    chars.forEach((char, index) => {
+  // Split text into characters and create animated spans
+  const animatedChars = useMemo(() => {
+    return text.split('').map((char, index) => {
       if (char === ' ') {
-        // Handle spaces
-        const spaceSpan = document.createElement('span');
-        spaceSpan.innerHTML = '&nbsp;';
-        spaceSpan.style.display = 'inline-block';
-        textRef.current.appendChild(spaceSpan);
-        charElements.push(spaceSpan);
-      } else {
-        const charSpan = document.createElement('span');
-        charSpan.textContent = char;
-        charSpan.style.display = 'inline-block';
-        textRef.current.appendChild(charSpan);
-        charElements.push(charSpan);
+        return (
+          <span
+            key={index}
+            style={{
+              display: 'inline-block',
+              width: '0.3em',
+              animationDelay: `${index * delay}ms`,
+            }}
+          >
+            &nbsp;
+          </span>
+        );
       }
+
+      return (
+        <span
+          key={index}
+          className="animate-char"
+          style={{
+            display: 'inline-block',
+            animationDelay: `${index * delay}ms`,
+            animationDuration: `${duration}ms`,
+            animationFillMode: 'both',
+            animationTimingFunction: 'cubic-bezier(0.25, 0.46, 0.45, 0.94)',
+          }}
+        >
+          {char}
+        </span>
+      );
     });
-
-    // Set initial state
-    gsap.set(charElements, from);
-
-    // Create animation timeline
-    const tl = gsap.timeline({
-      scrollTrigger: {
-        trigger: textRef.current,
-        start: `top bottom-=${rootMargin}`,
-        end: `bottom top+=${rootMargin}`,
-        toggleActions: 'play none none reverse'
-      }
-    });
-
-    // Animate each character
-    charElements.forEach((char, index) => {
-      tl.to(char, {
-        ...to,
-        duration: duration,
-        ease: ease,
-        delay: (index * delay) / 1000,
-      }, 0);
-    });
-
-    // Call completion callback when all animations finish
-    if (onLetterAnimationComplete) {
-      tl.call(onLetterAnimationComplete);
-    }
-
-    return () => {
-      tl.kill();
-      // Clean up the DOM elements
-      if (textRef.current) {
-        textRef.current.innerHTML = '';
-      }
-    };
-  }, [text, delay, duration, ease, splitType, from, to, threshold, rootMargin, onLetterAnimationComplete]);
+  }, [text, delay, duration]);
 
   return (
-    <div
-      ref={textRef}
-      className={className}
-      style={{
-        textAlign,
-        display: 'inline-block',
-        width: '100%',
-        lineHeight: 1.2,
-      }}
-    >
-    </div>
+    <span className={className} style={{ display: 'inline-block', width: '100%' }}>
+      {animatedChars}
+      <style jsx>{`
+        .animate-char {
+          opacity: 0;
+          transform: translateY(20px) rotateX(-90deg);
+          animation-name: charEnter;
+        }
+
+        @keyframes charEnter {
+          0% {
+            opacity: 0;
+            transform: translateY(20px) rotateX(-90deg);
+          }
+          100% {
+            opacity: 1;
+            transform: translateY(0) rotateX(0deg);
+          }
+        }
+      `}</style>
+    </span>
   );
 };
 

@@ -1,9 +1,12 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SWRConfig } from 'swr';
+import { StyleSheetManager } from 'styled-components';
+import { useRouter } from 'next/router';
 import theme from '../theme/theme';
 import Header from '../components/Header';
+import Loader from '../components/Loader';
 
 const fetcher = async (url) => {
   const res = await fetch(url);
@@ -17,27 +20,61 @@ const fetcher = async (url) => {
 };
 
 function MyApp({ Component, pageProps }) {
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
   useEffect(() => {
     // Initialize cron jobs on client side (will actually run on server)
     if (typeof window !== 'undefined') {
       fetch('/api/cron/init').catch(err => console.error('Failed to init cron:', err));
     }
+
+    // Set loading to false after initial load
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 2000);
+
+    return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    // Show loader on route changes
+    const handleStart = () => setLoading(true);
+    const handleComplete = () => setTimeout(() => setLoading(false), 500);
+
+    router.events.on('routeChangeStart', handleStart);
+    router.events.on('routeChangeComplete', handleComplete);
+    router.events.on('routeChangeError', handleComplete);
+
+    return () => {
+      router.events.off('routeChangeStart', handleStart);
+      router.events.off('routeChangeComplete', handleComplete);
+      router.events.off('routeChangeError', handleComplete);
+    };
+  }, [router.events]);
+
   return (
-    <SWRConfig
-      value={{
-        fetcher,
-        revalidateOnFocus: false,
-        dedupingInterval: 60000,
-      }}
-    >
-      <ThemeProvider theme={theme}>
-        <CssBaseline />
-        <Header />
-        <Component {...pageProps} />
-      </ThemeProvider>
-    </SWRConfig>
+    <StyleSheetManager shouldForwardProp={(prop) => prop !== 'sx'}>
+      <SWRConfig
+        value={{
+          fetcher,
+          revalidateOnFocus: false,
+          dedupingInterval: 60000,
+        }}
+      >
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          {loading ? (
+            <Loader />
+          ) : (
+            <>
+              <Header />
+              <Component {...pageProps} />
+            </>
+          )}
+        </ThemeProvider>
+      </SWRConfig>
+    </StyleSheetManager>
   );
 }
 
