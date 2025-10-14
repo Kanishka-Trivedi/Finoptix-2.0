@@ -165,7 +165,7 @@ export default function Funds() {
                 '&:first-child': {
                   borderRadius: '8px 0 0 8px',
                 },
-                '&:nth-child(2)': {
+                '&:nth-of-type(2)': {
                   borderRadius: '0',
                 },
                 '&:last-child': {

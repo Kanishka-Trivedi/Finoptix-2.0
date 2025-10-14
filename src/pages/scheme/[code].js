@@ -59,7 +59,7 @@ export default function SchemeDetail() {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           schemeCode: code,
           schemeName: data?.meta?.scheme_name || data?.schemeName || 'Unknown'
         }),
@@ -86,6 +86,7 @@ export default function SchemeDetail() {
           minHeight: '100vh',
           background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
           py: 4,
+          position: 'relative',
         }}
       >
         <Container maxWidth="lg">
@@ -160,12 +161,12 @@ export default function SchemeDetail() {
   // Calculate price statistics
   const calculateStats = () => {
     if (!navHistory || navHistory.length === 0) return null;
-    
+
     const navValues = navHistory.map(item => parseFloat(item.nav));
     const latestNAV = navValues[0];
     const highestNAV = Math.max(...navValues);
     const lowestNAV = Math.min(...navValues);
-    
+
     return {
       latest: latestNAV.toFixed(2),
       highest: highestNAV.toFixed(2),
@@ -191,12 +192,13 @@ export default function SchemeDetail() {
     <Box
       sx={{
         height: '100vh',
-        width: '100vw',
+        width: '100%',
         background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
         position: 'fixed',
         top: 0,
         left: 0,
-        overflow: 'hidden',
+        right: 0,
+        overflow: 'hidden'
       }}
     >
       <BlobBackground variant="default" />
@@ -207,7 +209,7 @@ export default function SchemeDetail() {
         sx={{
           position: 'fixed',
           left: 0,
-          top: 0,
+          top: { xs: 'auto', md: '64px' }, // Account for header height
           bottom: 0,
           width: { xs: '100%', md: '300px' },
           background: 'rgba(255, 255, 255, 0.95)',
@@ -215,8 +217,23 @@ export default function SchemeDetail() {
           border: 'none',
           borderRadius: '0',
           p: 2.5,
-          zIndex: 1000,
-          overflowY: 'auto',
+          zIndex: 10,
+          overflowY: 'hidden',
+          overflowX: 'hidden',
+          height: { xs: 'auto', md: 'calc(100vh - 64px)' }, // Subtract header height
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(108, 92, 231, 0.2)',
+            borderRadius: '4px',
+            '&:hover': {
+              background: 'rgba(108, 92, 231, 0.3)',
+            },
+          },
         }}
       >
         <List sx={{ p: 0 }}>
@@ -264,73 +281,57 @@ export default function SchemeDetail() {
             </ListItem>
           ))}
         </List>
+
+        <Box sx={{ mb: 2, display: 'flex', justifyContent: { xs: 'center', md: 'flex-start' } }}>
+          <Button
+            variant="contained"
+            startIcon={addingToWatchlist ? <CircularProgress size={20} color="inherit" /> : <BookmarkAddIcon />}
+            onClick={handleAddToWatchlist}
+            disabled={addingToWatchlist}
+            sx={{
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
+              boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)',
+              borderRadius: '8px',
+              py: 1,
+              px: 2,
+              fontSize: '0.9rem',
+              '&:hover': {
+                background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
+                boxShadow: '0 12px 32px rgba(108, 92, 231, 0.4)',
+              },
+            }}
+          >
+            Add to Watchlist
+          </Button>
+        </Box>
       </Paper>
 
-      {/* Fixed Header */}
-      <Paper
-        elevation={0}
-        sx={{
-          position: 'fixed',
-          top: 0,
-          left: { xs: 0, md: '300px' },
-          right: 0,
-          height: '70px',
-          background: 'rgba(255, 255, 255, 0.95)',
-          backdropFilter: 'blur(20px)',
-          border: '2px solid rgba(108, 92, 231, 0.15)',
-          borderRadius: '0',
-          p: 2,
-          zIndex: 999,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <Button
-          startIcon={<ArrowBackIcon />}
-          onClick={() => router.push('/funds')}
-          sx={{
-            background: 'rgba(255, 255, 255, 0.9)',
-            backdropFilter: 'blur(10px)',
-            border: '2px solid rgba(108, 92, 231, 0.2)',
-            color: '#6C5CE7',
-            borderRadius: '8px',
-            py: 1,
-            px: 2,
-            fontSize: '0.9rem',
-            '&:hover': {
-              background: 'rgba(255, 255, 255, 1)',
-              border: '2px solid rgba(108, 92, 231, 0.4)',
-            },
-          }}
-        >
-          Back to Funds
-        </Button>
-        <Button
-          variant="contained"
-          startIcon={addingToWatchlist ? <CircularProgress size={20} color="inherit" /> : <BookmarkAddIcon />}
-          onClick={handleAddToWatchlist}
-          disabled={addingToWatchlist}
-          sx={{
-            background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
-            boxShadow: '0 8px 24px rgba(108, 92, 231, 0.3)',
-            borderRadius: '8px',
-            py: 1,
-            px: 2,
-            fontSize: '0.9rem',
-            '&:hover': {
-              background: 'linear-gradient(135deg, #5F4FD1 0%, #8B82E8 100%)',
-              boxShadow: '0 12px 32px rgba(108, 92, 231, 0.4)',
-            },
-          }}
-        >
-          Add to Watchlist
-        </Button>
-      </Paper>
 
       {/* Main Content Area */}
       <Box
+        component="main"
         sx={{
+          position: 'fixed',
+          top: '64px',
+          right: 0,
+          bottom: 0,
+          left: { xs: 0, md: '300px' },
+          overflowY: 'auto',
+          overflowX: 'hidden',
+          pt: '70px', // Account for the fixed header
+          '&::-webkit-scrollbar': {
+            width: '8px',
+          },
+          '&::-webkit-scrollbar-track': {
+            background: 'transparent',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            background: 'rgba(108, 92, 231, 0.2)',
+            borderRadius: '4px',
+            '&:hover': {
+              background: 'rgba(108, 92, 231, 0.3)',
+            },
+          },
           position: 'fixed',
           top: '70px',
           left: { xs: 0, md: '300px' },

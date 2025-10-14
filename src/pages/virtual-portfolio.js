@@ -69,12 +69,30 @@ export default function VirtualPortfolio() {
     setError(null);
 
     try {
+      // First, fetch scheme details from external API
+      const schemeResponse = await fetch(`/api/mf?schemeCode=${formData.schemeCode}`);
+      if (!schemeResponse.ok) {
+        throw new Error('Invalid scheme code or scheme not found');
+      }
+      const schemeData = await schemeResponse.json();
+      const scheme = schemeData.schemes?.[0] || schemeData;
+
+      if (!scheme) {
+        throw new Error('Scheme not found');
+      }
+
+      // Then, create the SIP with fetched data
+      const sipData = {
+        ...formData,
+        schemeName: scheme.schemeName || formData.schemeName,
+      };
+
       const response = await fetch('/api/virtual-portfolio', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(sipData),
       });
 
       const result = await response.json();
@@ -94,7 +112,7 @@ export default function VirtualPortfolio() {
         setError(result.error || 'Failed to create virtual SIP');
       }
     } catch (err) {
-      setError('Failed to create virtual SIP');
+      setError(err.message || 'Failed to create virtual SIP');
     } finally {
       setSubmitting(false);
     }

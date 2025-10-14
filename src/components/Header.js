@@ -75,7 +75,8 @@ const Header = () => {
           sx={{
             background: '#6C5CE7',
             borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
-            borderRadius: 0
+            borderRadius: 0,
+            zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
           <Toolbar sx={{ py: 1 }}>
