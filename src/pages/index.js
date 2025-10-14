@@ -79,7 +79,7 @@ export default function Home() {
         {/* Hero Section */}
         <Box
           sx={{
-            pt: { xs: 8, md: 12 },
+            pt: { xs: 2, md: 4 }, // Further reduced padding-top
             pb: { xs: 6, md: 8 },
             textAlign: 'center',
             animation: `${fadeIn} 1s ease-out`,
@@ -89,7 +89,7 @@ export default function Home() {
             sx={{
               fontSize: { xs: '2.5rem', md: '4rem' },
               fontWeight: 800,
-              mb: 2,
+              mb: 0, // No margin-bottom
               textAlign: 'center',
               // Apply gradient to the entire text container
               position: 'relative',
@@ -97,16 +97,22 @@ export default function Home() {
           >
             <Box
               sx={{
-                background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
-                backgroundClip: 'text',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
+                color: '#6C5CE7' // Purple from theme
               }}
             >
               <SplitText
                 text="Mutual Fund Explorer"
-                delay={80}
-                duration={800}
+                className="text-base font-semibold text-center"
+                delay={100}
+                duration={0.6}
+                ease="power3.out"
+                splitType="chars"
+                from={{ opacity: 0, y: 40 }}
+                to={{ opacity: 1, y: 0 }}
+                threshold={0.1}
+                rootMargin="-100px"
+                textAlign="center"
+                tag="h1"
               />
             </Box>
           </Box>
@@ -114,7 +120,8 @@ export default function Home() {
             variant="h5"
             color="text.secondary"
             sx={{
-              mb: 4,
+              mt: 4, // Increased margin-top for more gap
+              mb: 5, // Added more margin-bottom for space
               fontSize: { xs: '1rem', md: '1.5rem' },
               maxWidth: '700px',
               mx: 'auto',

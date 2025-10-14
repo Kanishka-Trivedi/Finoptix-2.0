@@ -20,6 +20,7 @@ import {
   Skeleton,
   Button,
 } from '@mui/material';
+import BlobBackground from '../components/BlobBackground';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -28,14 +29,14 @@ import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 
 const categoryColors = {
-  Equity: '#B8A4D9',
-  Debt: '#A4D9C4',
-  Hybrid: '#F5D4A4',
-  Liquid: '#A4C4F5',
-  ELSS: '#F5A4A4',
-  Index: '#D4A4F5',
-  Gilt: '#A4F5D4',
-  Other: '#D4D4D4',
+  Equity: '#9A7BB8', // Brightened
+  Debt: '#8AAB9A', // Brightened
+  Hybrid: '#D7B68A', // Brightened
+  Liquid: '#8AABD7', // Brightened
+  ELSS: '#D78A8A', // Brightened
+  Index: '#B68AD7', // Brightened
+  Gilt: '#8AD7B6', // Brightened
+  Other: '#B6B6B6', // Brightened
 };
 
 function PerformanceCell({ schemeCode, period, label }) {
@@ -63,15 +64,15 @@ function PerformanceCell({ schemeCode, period, label }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       {isPositive ? (
-        <TrendingUpIcon sx={{ fontSize: 16, color: '#88C785' }} />
+        <TrendingUpIcon sx={{ fontSize: 16, color: '#006400' }} />
       ) : (
-        <TrendingDownIcon sx={{ fontSize: 16, color: '#E88585' }} />
+        <TrendingDownIcon sx={{ fontSize: 16, color: '#B00020' }} />
       )}
       <Typography
         variant="body2"
         sx={{
           fontWeight: 600,
-          color: isPositive ? '#88C785' : '#E88585',
+          color: isPositive ? '#006400' : '#B00020',
         }}
       >
         {value.toFixed(2)}%
@@ -112,11 +113,14 @@ export default function Watchlist() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)', // Purple gradient to match theme
         py: 4,
+        position: 'relative',
+        overflow: 'hidden', // Disable vertical scrolling
       }}
     >
-      <Container maxWidth="lg">
+      <BlobBackground variant="default" />
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
           <Button
@@ -130,7 +134,7 @@ export default function Watchlist() {
             variant="h3"
             sx={{
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)', // Purple gradient for title
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -191,7 +195,7 @@ export default function Watchlist() {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: 'rgba(255,255,255,0.9)',
+              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for empty state
             }}
           >
             <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
@@ -215,8 +219,9 @@ export default function Watchlist() {
             component={Paper}
             elevation={0}
             sx={{
-              background: 'rgba(255,255,255,0.9)',
-              border: '2px solid rgba(184,164,217,0.2)',
+              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for table
+              border: '2px solid',
+              borderColor: 'primary.main',
             }}
           >
             <Table>
@@ -238,8 +243,13 @@ export default function Watchlist() {
                     hover
                     sx={{
                       cursor: 'pointer',
+                      borderBottom: '1px solid',
+                      borderColor: 'primary.main',
+                      '&:last-child': {
+                        borderBottom: 'none',
+                      },
                       '&:hover': {
-                        backgroundColor: 'rgba(184,164,217,0.05)',
+                        backgroundColor: 'rgba(108, 92, 231, 0.05)', // Purple hover
                       },
                     }}
                   >

@@ -28,17 +28,17 @@ import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import BlobBackground from '../components/BlobBackground';
 
 const categoryColors = {
-  Equity: '#B8A4D9',
-  Debt: '#A4D9C4',
-  Hybrid: '#F5D4A4',
-  Liquid: '#A4C4F5',
-  ELSS: '#F5A4A4',
-  Index: '#D4A4F5',
-  Gilt: '#A4F5D4',
-  Other: '#D4D4D4',
+  Equity: '#9A7BB8', // Brightened
+  Debt: '#8AAB9A', // Brightened
+  Hybrid: '#D7B68A', // Brightened
+  Liquid: '#8AABD7', // Brightened
+  ELSS: '#D78A8A', // Brightened
+  Index: '#B68AD7', // Brightened
+  Gilt: '#8AD7B6', // Brightened
+  Other: '#B6B6B6', // Brightened
 };
 
 export default function VirtualPortfolio() {
@@ -129,11 +129,14 @@ export default function VirtualPortfolio() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #FFFAF0 0%, #F0FFF0 50%, #FFF0F5 100%)',
+        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)', // Purple gradient to match theme
         py: 4,
+        position: 'relative',
+        overflow: 'hidden', // Disable vertical scrolling
       }}
     >
-      <Container maxWidth="lg">
+      <BlobBackground variant="default" />
+      <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
@@ -148,7 +151,7 @@ export default function VirtualPortfolio() {
               variant="h3"
               sx={{
                 fontWeight: 800,
-                background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
+                background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)', // Purple gradient for title
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -179,14 +182,14 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: 'linear-gradient(135deg, rgba(184,164,217,0.1) 0%, rgba(184,164,217,0.05) 100%)',
-                  border: '2px solid rgba(184,164,217,0.3)',
+                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Total Invested
                 </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#B8A4D9' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
                   ₹{data.totals.totalInvested.toLocaleString()}
                 </Typography>
               </Paper>
@@ -196,14 +199,14 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: 'linear-gradient(135deg, rgba(164,217,196,0.1) 0%, rgba(164,217,196,0.05) 100%)',
-                  border: '2px solid rgba(164,217,196,0.3)',
+                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                   Current Value
                 </Typography>
-                <Typography variant="h4" sx={{ fontWeight: 700, color: '#A4D9C4' }}>
+                <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
                   ₹{data.totals.currentValue.toLocaleString()}
                 </Typography>
               </Paper>
@@ -213,12 +216,8 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: parseFloat(data.totals.totalReturn) >= 0
-                    ? 'rgba(168,217,164,0.1)'
-                    : 'rgba(245,164,164,0.1)',
-                  border: parseFloat(data.totals.totalReturn) >= 0
-                    ? '2px solid rgba(168,217,164,0.3)'
-                    : '2px solid rgba(245,164,164,0.3)',
+                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
@@ -226,15 +225,15 @@ export default function VirtualPortfolio() {
                 </Typography>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                   {parseFloat(data.totals.totalReturn) >= 0 ? (
-                    <TrendingUpIcon sx={{ fontSize: 32, color: '#88C785' }} />
+                    <TrendingUpIcon sx={{ fontSize: 32, color: '#006400' }} />
                   ) : (
-                    <TrendingDownIcon sx={{ fontSize: 32, color: '#E88585' }} />
+                    <TrendingDownIcon sx={{ fontSize: 32, color: '#B00020' }} />
                   )}
                   <Typography
                     variant="h4"
                     sx={{
                       fontWeight: 700,
-                      color: parseFloat(data.totals.totalReturn) >= 0 ? '#88C785' : '#E88585',
+                      color: parseFloat(data.totals.totalReturn) >= 0 ? '#006400' : '#B00020',
                     }}
                   >
                     {data.totals.totalReturn}%
@@ -275,7 +274,7 @@ export default function VirtualPortfolio() {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: 'rgba(255,255,255,0.9)',
+              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for empty state
             }}
           >
             <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
@@ -302,8 +301,8 @@ export default function VirtualPortfolio() {
                 <Card
                   elevation={0}
                   sx={{
-                    background: `linear-gradient(135deg, ${categoryColors[item.category] || '#D4D4D4'}15 0%, ${categoryColors[item.category] || '#D4D4D4'}05 100%)`,
-                    border: `2px solid ${categoryColors[item.category] || '#D4D4D4'}30`,
+                    background: 'rgba(232, 228, 243, 0.9)', // Purple tint for cards
+                    border: '2px solid rgba(108, 92, 231, 0.3)',
                   }}
                 >
                   <CardContent>
@@ -361,7 +360,7 @@ export default function VirtualPortfolio() {
                         <Typography variant="body2" color="text.secondary">
                           Total Invested
                         </Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#B8A4D9' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
                           ₹{(item.totalInvested || 0).toLocaleString()}
                         </Typography>
                       </Grid>
@@ -369,7 +368,7 @@ export default function VirtualPortfolio() {
                         <Typography variant="body2" color="text.secondary">
                           Current Value
                         </Typography>
-                        <Typography variant="h6" sx={{ fontWeight: 700, color: '#A4D9C4' }}>
+                        <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
                           ₹{(item.currentValue || 0).toLocaleString()}
                         </Typography>
                       </Grid>
@@ -381,7 +380,7 @@ export default function VirtualPortfolio() {
                           variant="body1"
                           sx={{
                             fontWeight: 700,
-                            color: (item.absoluteReturn || 0) >= 0 ? '#88C785' : '#E88585',
+                            color: (item.absoluteReturn || 0) >= 0 ? '#006400' : '#B00020',
                           }}
                         >
                           {(item.absoluteReturn || 0).toFixed(2)}%
@@ -395,7 +394,7 @@ export default function VirtualPortfolio() {
                           variant="body1"
                           sx={{
                             fontWeight: 700,
-                            color: (item.annualizedReturn || 0) >= 0 ? '#88C785' : '#E88585',
+                            color: (item.annualizedReturn || 0) >= 0 ? '#006400' : '#B00020',
                           }}
                         >
                           {(item.annualizedReturn || 0).toFixed(2)}%
