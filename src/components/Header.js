@@ -15,6 +15,9 @@ import {
   useScrollTrigger,
   Slide,
 } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
 import { useRouter } from 'next/router';
 import MenuIcon from '@mui/icons-material/Menu';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
@@ -41,7 +44,7 @@ const float = keyframes`
   }
 `;
 
-const Header = () => {
+const Header = ({ toggleTheme, themeMode }) => {
   const theme = useTheme();
   const router = useRouter();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
@@ -79,44 +82,58 @@ const Header = () => {
             zIndex: (theme) => theme.zIndex.drawer + 1
           }}
         >
-          <Toolbar sx={{ py: 1 }}>
+          <Toolbar sx={{ py: 1, display: 'flex', alignItems: 'center' }}>
+            {/* Left: Logo */}
             <Box
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                flexGrow: 1,
-                animation: `${float} 3s ease-in-out infinite`,
-              }}
+              sx={{ display: 'flex', alignItems: 'center', mr: 2, cursor: 'pointer', animation: `${float} 3s ease-in-out infinite` }}
+              onClick={() => handleNavigation('/')}
             >
-              <Box
+              <TrendingUpIcon sx={{ mr: 1, color: 'white', fontSize: 28 }} />
+              <Typography
+                variant="h5"
+                component="div"
                 sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  mr: 2,
-                  p: 1,
-                  borderRadius: 2,
-                  cursor: 'pointer',
+                  fontWeight: 800,
+                  background: 'linear-gradient(135deg, #2D2D2D 0%, #5D5D5D 100%)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundClip: 'text',
+                  letterSpacing: '-0.02em',
                 }}
-                onClick={() => handleNavigation('/')}
               >
-                <TrendingUpIcon sx={{ mr: 1, color: 'white', fontSize: 28 }} />
-                <Typography
-                  variant="h5"
-                  component="div"
-                  sx={{
-                    fontWeight: 800,
-                    background: 'linear-gradient(135deg, #2D2D2D 0%, #5D5D5D 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text',
-                    letterSpacing: '-0.02em',
-                  }}
-                >
-                  Finoptix 2.0
-                </Typography>
-              </Box>
+                Finoptix 2.0
+              </Typography>
             </Box>
 
+            {/* Middle: Navigation (centered) */}
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', alignItems: 'center', gap: 1 }}>
+              {navigationItems.map((item) => (
+                <Button
+                  key={item.path}
+                  onClick={() => handleNavigation(item.path)}
+                  variant={router.pathname === item.path ? 'contained' : 'text'}
+                  sx={{
+                    borderRadius: 3,
+                    px: 3,
+                    py: 1.5,
+                    fontWeight: 600,
+                    background: router.pathname === item.path ? 'white' : 'transparent',
+                    color: router.pathname === item.path ? '#6C5CE7' : 'white',
+                    '&:hover': {
+                      background: 'white',
+                      color: '#6C5CE7',
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
+                    },
+                    transition: 'all 0.3s ease',
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
+
+            {/* Right: Actions (profile + theme) */}
             {isMobile ? (
               <IconButton
                 color="primary"
@@ -135,31 +152,11 @@ const Header = () => {
                 <MenuIcon />
               </IconButton>
             ) : (
-              <Box sx={{ display: 'flex', gap: 1 }}>
-                {navigationItems.map((item) => (
-                  <Button
-                    key={item.path}
-                    onClick={() => handleNavigation(item.path)}
-                    variant={router.pathname === item.path ? 'contained' : 'text'}
-                    sx={{
-                      borderRadius: 3,
-                      px: 3,
-                      py: 1.5,
-                      fontWeight: 600,
-                      background: router.pathname === item.path ? 'white' : 'transparent',
-                      color: router.pathname === item.path ? '#6C5CE7' : 'white',
-                      '&:hover': {
-                        background: 'white',
-                        color: '#6C5CE7',
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                      },
-                      transition: 'all 0.3s ease',
-                    }}
-                  >
-                    {item.label}
-                  </Button>
-                ))}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <IconButton onClick={toggleTheme} sx={{ color: 'white' }} aria-label="toggle theme">
+                  {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+                </IconButton>
+                <Avatar sx={{ bgcolor: 'white', color: '#6C5CE7', width: 36, height: 36 }}>A</Avatar>
               </Box>
             )}
           </Toolbar>

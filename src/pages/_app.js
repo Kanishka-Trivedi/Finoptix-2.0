@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
-import { ThemeProvider } from '@mui/material/styles';
+import { useEffect, useState, useMemo } from 'react';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import { SWRConfig } from 'swr';
 import { StyleSheetManager } from 'styled-components';
 import { useRouter } from 'next/router';
-import theme from '../theme/theme';
+import baseTheme from '../theme/theme';
 import Header from '../components/Header';
 import Loader from '../components/Loader';
 
@@ -53,6 +53,12 @@ function MyApp({ Component, pageProps }) {
     };
   }, [router.events]);
 
+  const [mode, setMode] = useState('light');
+
+  const toggleMode = () => setMode((m) => (m === 'light' ? 'dark' : 'light'));
+
+  const theme = useMemo(() => createTheme({ ...baseTheme, palette: { ...baseTheme.palette, mode } }), [mode]);
+
   return (
     <StyleSheetManager shouldForwardProp={(prop) => prop !== 'sx'}>
       <SWRConfig
@@ -68,7 +74,7 @@ function MyApp({ Component, pageProps }) {
             <Loader />
           ) : (
             <>
-              <Header />
+              <Header toggleTheme={toggleMode} themeMode={mode} />
               <Component {...pageProps} />
             </>
           )}
