@@ -15,12 +15,9 @@ import {
   useScrollTrigger,
   Slide,
 } from '@mui/material';
-import Avatar from '@mui/material/Avatar';
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+// removed Avatar and theme icons per design request
 import { useRouter } from 'next/router';
-import MenuIcon from '@mui/icons-material/Menu';
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import { TrendingUp, Menu as MenuIcon, Eye, Wallet, User } from 'lucide-react';
 import { keyframes } from '@mui/system';
 
 const glow = keyframes`
@@ -55,9 +52,10 @@ const Header = ({ toggleTheme, themeMode }) => {
   });
 
   const navigationItems = [
-    { label: 'Funds', path: '/funds' },
-    { label: 'Watchlist', path: '/watchlist' },
-    { label: 'Virtual Portfolio', path: '/virtual-portfolio' },
+    { label: 'Funds', path: '/funds', icon: TrendingUp },
+    { label: 'Watchlist', path: '/watchlist', icon: Eye },
+    { label: 'Portfolio', path: '/virtual-portfolio', icon: Wallet },
+    { label: 'Profile', path: '/profile', icon: User },
   ];
 
   const handleNavigation = (path) => {
@@ -76,10 +74,11 @@ const Header = ({ toggleTheme, themeMode }) => {
           position="fixed"
           elevation={0}
           sx={{
-            background: '#6C5CE7',
-            borderBottom: '1px solid rgba(255, 255, 255, 0.2)',
+            background: (t) => t.customColors?.background || 'linear-gradient(90deg,#071027 0%, #08122a 100%)',
+            borderBottom: (t) => `1px solid ${t.customColors ? 'rgba(6,182,212,0.08)' : 'rgba(6,182,212,0.08)'}`,
             borderRadius: 0,
-            zIndex: (theme) => theme.zIndex.drawer + 1
+            zIndex: (theme) => theme.zIndex.drawer + 1,
+            backdropFilter: 'blur(6px)'
           }}
         >
           <Toolbar sx={{ py: 1, display: 'flex', alignItems: 'center' }}>
@@ -88,49 +87,82 @@ const Header = ({ toggleTheme, themeMode }) => {
               sx={{ display: 'flex', alignItems: 'center', mr: 2, cursor: 'pointer', animation: `${float} 3s ease-in-out infinite` }}
               onClick={() => handleNavigation('/')}
             >
-              <TrendingUpIcon sx={{ mr: 1, color: 'white', fontSize: 28 }} />
-              <Typography
-                variant="h5"
-                component="div"
-                sx={{
-                  fontWeight: 800,
-                  background: 'linear-gradient(135deg, #2D2D2D 0%, #5D5D5D 100%)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text',
-                  letterSpacing: '-0.02em',
-                }}
-              >
-                Finoptix 2.0
-              </Typography>
-            </Box>
-
-            {/* Middle: Navigation (centered) */}
-            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' }, justifyContent: 'center', alignItems: 'center', gap: 1 }}>
-              {navigationItems.map((item) => (
-                <Button
-                  key={item.path}
-                  onClick={() => handleNavigation(item.path)}
-                  variant={router.pathname === item.path ? 'contained' : 'text'}
+              <Box sx={{ width: 44, height: 44, borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', background: (t) => t.customColors?.heroGradient || 'linear-gradient(135deg,#06b6d4,#7c3aed,#fb7185)', boxShadow: '0 8px 30px rgba(99,102,241,0.12)', mr: 1 }}>
+                <TrendingUp color="#0b1220" size={18} />
+              </Box>
+              <Box sx={{ display: 'flex', flexDirection: 'column' }}>
+                <Typography
+                  variant="h6"
+                  component="div"
                   sx={{
-                    borderRadius: 3,
-                    px: 3,
-                    py: 1.5,
-                    fontWeight: 600,
-                    background: router.pathname === item.path ? 'white' : 'transparent',
-                    color: router.pathname === item.path ? '#6C5CE7' : 'white',
-                    '&:hover': {
-                      background: 'white',
-                      color: '#6C5CE7',
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)',
-                    },
-                    transition: 'all 0.3s ease',
+                    fontWeight: 800,
+                    background: 'linear-gradient(90deg,#06b6d4,#7c3aed)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
+                    letterSpacing: '-0.02em',
+                    fontSize: '1.125rem'
                   }}
                 >
-                  {item.label}
-                </Button>
-              ))}
+                  Finoptix 2.0
+                </Typography>
+                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.75)' }}>
+                  Mutual Fund Explorer
+                </Typography>
+              </Box>
+            </Box>
+            <Box sx={{ flexGrow: 1 }} />
+
+            {/* Right: Navigation */}
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 2 }}>
+              {navigationItems.map((item) => {
+                const active = router.pathname === item.path;
+                return (
+                  <Button
+                    key={item.path}
+                    onClick={() => handleNavigation(item.path)}
+                    variant="text"
+                    sx={{
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 1.5,
+                      color: active ? (t) => t.customColors?.accentTeal || '#06b6d4' : 'rgba(255,255,255,0.92)',
+                      fontWeight: 700,
+                      textTransform: 'none',
+                      px: 2.5,
+                      py: 0.7,
+                      borderRadius: '9999px',
+                      background: active ? (t) => `${t.customColors ? 'rgba(2,6,23,0.5)' : 'rgba(2,6,23,0.5)'}` : 'transparent',
+                      transition: 'all 0.18s ease',
+                      '&:hover': {
+                        background: (t) => t.customColors ? 'rgba(5,20,40,0.7)' : 'rgba(5,20,40,0.7)',
+                        color: (t) => t.customColors?.accentTeal || '#06b6d4',
+                        boxShadow: (t) => `0 8px 30px rgba(6,182,212,0.06)`
+                      },
+                      '& .navIconBox': {
+                        width: 28,
+                        height: 28,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        borderRadius: 1.5,
+                        background: active ? 'rgba(6,182,212,0.12)' : 'rgba(255,255,255,0.02)',
+                        transition: 'all 0.18s ease',
+                        color: active ? '#06b6d4' : 'inherit'
+                      },
+                      '&:hover .navIconBox': {
+                        background: (t) => `linear-gradient(90deg, rgba(6,182,212,0.12), rgba(124,58,237,0.08))`,
+                        color: (t) => t.customColors?.accentTeal || '#06b6d4'
+                      }
+                    }}
+                  >
+                    <Box className="navIconBox" sx={{ width: 28, height: 28, display: 'inline-flex', alignItems: 'center', justifyContent: 'center', borderRadius: 1.5, background: active ? 'rgba(6,182,212,0.12)' : 'rgba(255,255,255,0.02)' }}>
+                      <item.icon color={active ? '#06b6d4' : 'white'} size={16} />
+                    </Box>
+                    <Box component="span" sx={{ ml: 0.5 }}>{item.label}</Box>
+                  </Button>
+                );
+              })}
             </Box>
 
             {/* Right: Actions (profile + theme) */}
@@ -151,14 +183,7 @@ const Header = ({ toggleTheme, themeMode }) => {
               >
                 <MenuIcon />
               </IconButton>
-            ) : (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <IconButton onClick={toggleTheme} sx={{ color: 'white' }} aria-label="toggle theme">
-                  {themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
-                </IconButton>
-                <Avatar sx={{ bgcolor: 'white', color: '#6C5CE7', width: 36, height: 36 }}>A</Avatar>
-              </Box>
-            )}
+            ) : null}
           </Toolbar>
         </AppBar>
       </Slide>

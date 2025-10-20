@@ -26,14 +26,14 @@ import useSWR from 'swr';
 import BlobBackground from '../components/BlobBackground';
 
 const categoryColors = {
-  Equity: '#6C5CE7',
-  Debt: '#00D2D3',
-  Hybrid: '#A29BFE',
-  Liquid: '#00D2A0',
-  ELSS: '#FF6B9D',
-  Index: '#FFB800',
-  Gilt: '#7FEFEF',
-  Other: '#636E72',
+  Equity: '#5B3FA8', // deeper purple for contrast
+  Debt: '#007B73', // deeper teal
+  Hybrid: '#A77B4A', // warm/darker bronze
+  Liquid: '#00748F', // deep cyan
+  ELSS: '#C14A6A', // stronger rose
+  Index: '#B8860B', // darker gold
+  Gilt: '#3DAF9A', // teal-green
+  Other: '#FF8C42', // vivid orange to stand out
 };
 
 export default function Funds() {
@@ -41,22 +41,32 @@ export default function Funds() {
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all'); // all, active, inactive
+  const [statusFilter, setStatusFilter] = useState(() => {
+    // Try to derive initial filter synchronously to avoid a render flash from the default 'all'
+    try {
+      if (typeof window !== 'undefined') {
+        const params = new URLSearchParams(window.location.search);
+        const urlStatus = params.get('status');
+        if (urlStatus && ['all', 'active', 'inactive'].includes(urlStatus)) {
+          return urlStatus;
+        }
+
+        const saved = localStorage.getItem('fundsStatusFilter');
+        if (saved && ['all', 'active', 'inactive'].includes(saved)) {
+          return saved;
+        }
+      }
+    } catch (e) {
+      // ignore and fall back to default
+    }
+
+    return 'all';
+  }); // all, active, inactive
   const limit = 100; // Show 100 schemes per page
 
-  // Initialize filter from URL query params or localStorage on mount
-  useEffect(() => {
-    const urlStatus = router.query.status;
-    const savedStatus = localStorage.getItem('fundsStatusFilter');
-    
-    if (urlStatus && ['all', 'active', 'inactive'].includes(urlStatus)) {
-      setStatusFilter(urlStatus);
-    } else if (savedStatus && ['all', 'active', 'inactive'].includes(savedStatus)) {
-      setStatusFilter(savedStatus);
-      // Update URL to reflect the saved filter
-      router.replace({ pathname: '/funds', query: { status: savedStatus } }, undefined, { shallow: true });
-    }
-  }, []);
+  // NOTE: initial value is derived synchronously from window.location or localStorage
+  // to avoid an initial render flash. We keep the effect below (watching statusFilter)
+  // to persist changes and update the URL when the filter changes.
 
   // Save filter to localStorage and URL whenever it changes
   useEffect(() => {
@@ -106,7 +116,7 @@ export default function Funds() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
+        background: (t) => t.customColors?.background || 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)',
         py: 4,
         position: 'relative',
         overflow: 'hidden',
@@ -140,9 +150,9 @@ export default function Funds() {
           sx={{
             mb: 3,
             p: 2,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: (t) => t.customColors?.buttonSecondaryBg || 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(108, 92, 231, 0.15)',
+            border: (t) => `2px solid ${t.palette.primary.main}26`,
             borderRadius: '24px',
             display: 'flex',
             alignItems: 'center',
@@ -204,9 +214,9 @@ export default function Funds() {
           sx={{
             mb: 4,
             p: 2,
-            background: 'rgba(255, 255, 255, 0.95)',
+            background: (t) => t.customColors?.buttonSecondaryBg || 'rgba(255, 255, 255, 0.95)',
             backdropFilter: 'blur(20px)',
-            border: '2px solid rgba(108, 92, 231, 0.15)',
+            border: (t) => `2px solid ${t.palette.primary.main}26`,
             borderRadius: '24px',
           }}
         >
@@ -224,11 +234,49 @@ export default function Funds() {
             }}
             sx={{
               '& .MuiOutlinedInput-root': {
-                background: 'white',
+                background: (t) => t.palette.background.paper,
               },
             }}
           />
         </Paper>
+
+                {/* Summary: showing X-Y of Z funds (visible under the search bar) */}
+        {(isLoading || data) && (
+          (() => {
+            const schemesOnPage = data?.schemes?.length ?? 0;
+            const totalCount = data?.pagination?.totalItems ?? data?.pagination?.total ?? data?.pagination?.totalRecords ?? data?.pagination?.total_count ?? null;
+            const start = schemesOnPage > 0 ? (page - 1) * limit + 1 : 0;
+            const end = schemesOnPage > 0 ? start + schemesOnPage - 1 : 0;
+
+            if (isLoading) {
+              return (
+                <Box sx={{ mb: 3 }}>
+                  <Typography variant="body2" color="text.secondary">Loading funds…</Typography>
+                </Box>
+              );
+            }
+
+            return (
+              <Box sx={{ mb: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Typography variant="body2" color="text.secondary">
+                  {statusFilter === 'all' ? 'All' : statusFilter === 'active' ? 'Active' : 'Inactive'} •{' '}
+                  {totalCount ? (
+                    <>
+                      Showing {start}-{end} of {totalCount} funds
+                    </>
+                  ) : (
+                    <>Showing {schemesOnPage} funds</>
+                  )}
+                </Typography>
+                {totalCount && (
+                  <Typography variant="body2" color="text.secondary">
+                    Page {page} of {data?.pagination?.totalPages ?? Math.ceil((totalCount || schemesOnPage) / limit)}
+                  </Typography>
+                )}
+              </Box>
+            );
+          })()
+        )}
 
         {/* Indexing State */}
         {data?.indexing && (
@@ -236,7 +284,7 @@ export default function Funds() {
             sx={{
               p: 4,
               textAlign: 'center',
-              background: 'rgba(255,255,255,0.9)',
+              background: (t) => t.customColors?.buttonSecondaryBg || 'rgba(255,255,255,0.9)',
             }}
           >
             <CircularProgress sx={{ mb: 2 }} />
@@ -295,7 +343,7 @@ export default function Funds() {
                 sx={{
                   p: 4,
                   textAlign: 'center',
-                  background: 'rgba(255,255,255,0.9)',
+                  background: (t) => t.customColors?.buttonSecondaryBg || 'rgba(255,255,255,0.9)',
                 }}
               >
                 <Typography variant="h6" color="text.secondary">
@@ -307,9 +355,6 @@ export default function Funds() {
               </Paper>
             ) : (
               <>
-                <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                  Showing {data.schemes.length} of {data.pagination.total} funds
-                </Typography>
                 <Grid container spacing={3}>
                   {data.schemes.map((scheme) => (
                     <Grid item xs={12} sm={6} md={4} key={scheme.schemeCode}>
@@ -317,7 +362,7 @@ export default function Funds() {
                         elevation={0}
                         sx={{
                           height: '100%',
-                          background: 'rgba(255, 255, 255, 0.95)',
+                          background: (t) => t.palette.background.paper,
                           backdropFilter: 'blur(20px)',
                           border: `2px solid ${categoryColors[scheme.category] || '#636E72'}30`,
                           borderRadius: '24px',
@@ -349,11 +394,7 @@ export default function Funds() {
                             >
                               {scheme.schemeName}
                             </Typography>
-                            <Typography
-                              variant="body2"
-                              color="text.secondary"
-                              sx={{ mb: 2 }}
-                            >
+                            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                               {scheme.fundHouse}
                             </Typography>
                             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
@@ -390,7 +431,7 @@ export default function Funds() {
                 </Grid>
 
                 {/* Pagination */}
-                {data.pagination.totalPages > 1 && (
+                {data.pagination && data.pagination.totalPages > 1 && (
                   <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                     <Pagination
                       count={data.pagination.totalPages}

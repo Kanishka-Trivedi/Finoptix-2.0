@@ -147,29 +147,22 @@ export default function VirtualPortfolio() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)', // Purple gradient to match theme
+        background: (t) => t.customColors?.background || '#0B0B24',
         py: 4,
         position: 'relative',
         overflow: 'hidden', // Disable vertical scrolling
       }}
     >
-      <BlobBackground variant="default" />
+      <BlobBackground variant="default" starCount={60} />
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ mb: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
           <Box>
-            <Button
-              startIcon={<ArrowBackIcon />}
-              onClick={() => router.push('/funds')}
-              sx={{ mb: 2 }}
-            >
-              Back to Funds
-            </Button>
             <Typography
               variant="h3"
               sx={{
                 fontWeight: 800,
-                background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)', // Purple gradient for title
+                background: (t) => t.customColors?.heroGradient || 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
                 backgroundClip: 'text',
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
@@ -200,7 +193,7 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  background: (t) => t.customColors?.buttonSecondaryBg || t.customColors?.cardBg,
                   border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
@@ -217,7 +210,7 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  background: (t) => t.customColors?.buttonSecondaryBg || t.customColors?.cardBg,
                   border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
@@ -234,7 +227,7 @@ export default function VirtualPortfolio() {
                 elevation={0}
                 sx={{
                   p: 3,
-                  background: 'rgba(232, 228, 243, 0.9)', // Purple tint for summary cards
+                  background: (t) => t.customColors?.buttonSecondaryBg || t.customColors?.cardBg,
                   border: '2px solid rgba(108, 92, 231, 0.3)',
                 }}
               >
@@ -292,7 +285,7 @@ export default function VirtualPortfolio() {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for empty state
+              background: (t) => t.customColors?.buttonSecondaryBg || t.customColors?.cardBg,
             }}
           >
             <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
@@ -301,13 +294,13 @@ export default function VirtualPortfolio() {
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
               Create virtual SIPs to simulate your investments
             </Typography>
-            <Button
-              variant="contained"
-              startIcon={<AddIcon />}
-              onClick={() => setOpenDialog(true)}
-            >
-              Add Your First SIP
-            </Button>
+                <Button
+                  variant="contained"
+                  startIcon={<AddIcon />}
+                  onClick={() => setOpenDialog(true)}
+                >
+                  Add Your First SIP
+                </Button>
           </Paper>
         )}
 
@@ -319,7 +312,7 @@ export default function VirtualPortfolio() {
                 <Card
                   elevation={0}
                   sx={{
-                    background: 'rgba(232, 228, 243, 0.9)', // Purple tint for cards
+                    background: (t) => t.customColors?.cardBg || t.palette.background.paper,
                     border: '2px solid rgba(108, 92, 231, 0.3)',
                   }}
                 >

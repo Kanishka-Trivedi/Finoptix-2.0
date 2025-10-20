@@ -1,6 +1,62 @@
 import { Box } from '@mui/material';
 
-export default function BlobBackground({ variant = 'default' }) {
+const GlowingStars = ({ count = 400 }) => (
+  <>
+    {/* Starfield - configurable count (default 400) */}
+    {[...Array(count)].map((_, i) => (
+      <Box
+        key={i}
+        sx={{
+          position: 'absolute',
+          width: `${Math.random() * 6 + 2}px`, // size randomized
+          height: `${Math.random() * 6 + 2}px`, // size randomized
+          background: `radial-gradient(circle, ${
+            Math.random() > 0.6
+              ? 'rgba(0, 210, 211, 0.95)'
+              : Math.random() > 0.3
+              ? 'rgba(162, 155, 254, 0.95)'
+              : 'rgba(255, 184, 0, 0.9)'
+          } 0%, transparent 70%)`,
+          borderRadius: '50%',
+          boxShadow: `0 0 ${Math.random() * 15 + 5}px ${ // Increased glow from 3-13px to 5-20px
+            Math.random() > 0.6
+              ? Math.random() > 0.3
+                ? 'rgba(0, 210, 211, 0.9)'
+                : 'rgba(162, 155, 254, 0.9)'
+              : 'rgba(255, 184, 0, 0.8)'
+          }`,
+          left: `${Math.random() * 100}%`,
+          top: `${Math.random() * 85}%`, // coverage randomized
+          animation: `starFloat ${Math.random() * 25 + 20}s linear infinite`,
+          animationDelay: `${Math.random() * 25}s`,
+          zIndex: Math.random() > 0.9 ? 3 : Math.random() > 0.75 ? 2 : Math.random() > 0.5 ? 1 : 0, // More layering
+          opacity: Math.random() * 0.9 + 0.1, // Slightly more opaque
+          pointerEvents: 'none',
+          transform: 'translateZ(0)',
+        }}
+      />
+    ))}
+
+    <style jsx global>{`
+      @keyframes starFloat {
+        0% {
+          transform: translateY(0) scale(1);
+          opacity: 0.8;
+        }
+        85% {
+          transform: translateY(-120vh) scale(1.1);
+          opacity: 0.9;
+        }
+        100% {
+          transform: translateY(-140vh) scale(0);
+          opacity: 0;
+        }
+      }
+    `}</style>
+  </>
+);
+
+export default function BlobBackground({ variant = 'default', starCount }) {
   const blobVariants = {
     default: (
       <>
@@ -19,7 +75,7 @@ export default function BlobBackground({ variant = 'default' }) {
             zIndex: 0,
           }}
         />
-        
+
         {/* Top Right Blob */}
         <Box
           sx={{
@@ -35,7 +91,7 @@ export default function BlobBackground({ variant = 'default' }) {
             zIndex: 0,
           }}
         />
-        
+
         {/* Bottom Blob */}
         <Box
           sx={{
@@ -51,6 +107,9 @@ export default function BlobBackground({ variant = 'default' }) {
             zIndex: 0,
           }}
         />
+
+  {/* Glowing Stars (configurable) */}
+  <GlowingStars count={typeof starCount === 'number' ? starCount : undefined} />
 
         <style jsx global>{`
           @keyframes blob {

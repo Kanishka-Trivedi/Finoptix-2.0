@@ -1,47 +1,61 @@
 import { createTheme } from '@mui/material/styles';
 
+// Dark theme tokens from user
+export const darkThemeColors = {
+  background: '#0B0B24',
+  heroGradient: 'linear-gradient(135deg, #00D2D3 0%, #A29BFE 100%)', // Teal to Purple
+  textPrimary: '#FFFFFF',
+  textSecondary: '#A9A7C7',
+  buttonPrimaryBg: '#FFB800', // Yellow/Gold for main button
+  buttonSecondaryBg: 'rgba(255, 255, 255, 0.1)',
+  cardBg: 'rgba(255, 255, 255, 0.05)',
+  accentTeal: '#00D2D3',
+  accentPurple: '#A29BFE',
+  accentRed: '#FF6B9D',
+};
+
 const theme = createTheme({
   palette: {
-    mode: 'light',
+    mode: 'dark',
     primary: {
-      main: '#B8A4D9', // Soft lavender
-      light: '#D4C4E8',
-      dark: '#9B85C7',
-      contrastText: '#2D2D2D',
+      main: darkThemeColors.accentTeal,
+      light: darkThemeColors.accentTeal,
+      dark: darkThemeColors.accentPurple,
+      contrastText: darkThemeColors.textPrimary,
     },
     secondary: {
-      main: '#A4D9C4', // Soft mint
-      light: '#C4E8D4',
-      dark: '#85C7A8',
-      contrastText: '#2D2D2D',
+      main: darkThemeColors.accentPurple,
+      light: darkThemeColors.accentPurple,
+      dark: darkThemeColors.accentTeal,
+      contrastText: darkThemeColors.textPrimary,
     },
     success: {
-      main: '#A8D9A4',
-      light: '#C8E8C4',
-      dark: '#88C785',
+      main: darkThemeColors.accentTeal,
+      light: darkThemeColors.accentTeal,
+      dark: darkThemeColors.accentTeal,
     },
     error: {
-      main: '#F5A4A4',
-      light: '#FFC4C4',
-      dark: '#E88585',
+      main: darkThemeColors.accentRed,
+      light: darkThemeColors.accentRed,
+      dark: darkThemeColors.accentRed,
     },
     warning: {
-      main: '#F5D4A4',
-      light: '#FFE4C4',
-      dark: '#E8C485',
+      main: darkThemeColors.buttonPrimaryBg,
+      light: darkThemeColors.buttonPrimaryBg,
+      dark: darkThemeColors.buttonPrimaryBg,
     },
     info: {
-      main: '#A4C4F5',
-      light: '#C4D4FF',
-      dark: '#85A8E8',
+      main: darkThemeColors.accentPurple,
+      light: darkThemeColors.accentPurple,
+      dark: darkThemeColors.accentPurple,
     },
     background: {
-      default: '#FFFAF0', // Floral white
-      paper: '#FFFFFF',
+      default: darkThemeColors.background,
+      paper: darkThemeColors.cardBg,
     },
     text: {
-      primary: '#2D2D2D',
-      secondary: '#5D5D5D',
+      primary: darkThemeColors.textPrimary,
+      secondary: darkThemeColors.textSecondary,
     },
   },
   typography: {
@@ -92,10 +106,10 @@ const theme = createTheme({
           },
         },
         contained: {
-          background: 'linear-gradient(135deg, #B8A4D9 0%, #A4D9C4 100%)',
-          '&:hover': {
-            background: 'linear-gradient(135deg, #9B85C7 0%, #85C7A8 100%)',
-          },
+              background: darkThemeColors.heroGradient,
+              '&:hover': {
+                background: `linear-gradient(135deg, ${darkThemeColors.accentTeal} 0%, ${darkThemeColors.accentPurple} 100%)`,
+              },
         },
       },
     },
@@ -137,6 +151,7 @@ const theme = createTheme({
       },
     },
   },
+  customColors: darkThemeColors,
 });
 
 export default theme;

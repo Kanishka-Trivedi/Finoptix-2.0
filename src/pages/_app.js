@@ -53,7 +53,8 @@ function MyApp({ Component, pageProps }) {
     };
   }, [router.events]);
 
-  const [mode, setMode] = useState('light');
+  // default to dark theme matching the landing design
+  const [mode, setMode] = useState('dark');
 
   const toggleMode = () => setMode((m) => (m === 'light' ? 'dark' : 'light'));
 

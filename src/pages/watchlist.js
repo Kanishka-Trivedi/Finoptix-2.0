@@ -24,19 +24,18 @@ import BlobBackground from '../components/BlobBackground';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
-import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { useRouter } from 'next/router';
 import useSWR, { mutate } from 'swr';
 
 const categoryColors = {
-  Equity: '#9A7BB8', // Brightened
-  Debt: '#8AAB9A', // Brightened
-  Hybrid: '#D7B68A', // Brightened
-  Liquid: '#8AABD7', // Brightened
-  ELSS: '#D78A8A', // Brightened
-  Index: '#B68AD7', // Brightened
-  Gilt: '#8AD7B6', // Brightened
-  Other: '#B6B6B6', // Brightened
+  Equity: '#5B3FA8', // deeper purple for contrast
+  Debt: '#007B73', // deeper teal
+  Hybrid: '#A77B4A', // warm/darker bronze
+  Liquid: '#00748F', // deep cyan
+  ELSS: '#C14A6A', // stronger rose
+  Index: '#B8860B', // darker gold
+  Gilt: '#3DAF9A', // teal-green
+  Other: '#FF8C42', // vivid orange to stand out
 };
 
 function PerformanceCell({ schemeCode, period, label }) {
@@ -64,15 +63,15 @@ function PerformanceCell({ schemeCode, period, label }) {
   return (
     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
       {isPositive ? (
-        <TrendingUpIcon sx={{ fontSize: 16, color: '#006400' }} />
+        <TrendingUpIcon sx={{ fontSize: 16, color: (t) => t.palette.success.main }} />
       ) : (
-        <TrendingDownIcon sx={{ fontSize: 16, color: '#B00020' }} />
+        <TrendingDownIcon sx={{ fontSize: 16, color: (t) => t.palette.error.main }} />
       )}
       <Typography
         variant="body2"
         sx={{
           fontWeight: 600,
-          color: isPositive ? '#006400' : '#B00020',
+          color: isPositive ? (t) => t.palette.success.main : (t) => t.palette.error.main,
         }}
       >
         {value.toFixed(2)}%
@@ -113,28 +112,21 @@ export default function Watchlist() {
     <Box
       sx={{
         minHeight: '100vh',
-        background: 'linear-gradient(135deg, #E8E4F3 0%, #F5F3FF 50%, #E8E4F3 100%)', // Purple gradient to match theme
+        background: (t) => t.customColors?.background || '#0B0B24',
         py: 4,
         position: 'relative',
         overflow: 'hidden', // Disable vertical scrolling
       }}
     >
-      <BlobBackground variant="default" />
+  <BlobBackground variant="default" starCount={60} />
       <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
         {/* Header */}
         <Box sx={{ mb: 4 }}>
-          <Button
-            startIcon={<ArrowBackIcon />}
-            onClick={() => router.push('/funds')}
-            sx={{ mb: 2 }}
-          >
-            Back to Funds
-          </Button>
           <Typography
             variant="h3"
             sx={{
               fontWeight: 800,
-              background: 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)', // Purple gradient for title
+              background: (t) => t.customColors?.heroGradient || 'linear-gradient(135deg, #6C5CE7 0%, #A29BFE 100%)',
               backgroundClip: 'text',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
@@ -150,7 +142,7 @@ export default function Watchlist() {
 
         {/* Loading State */}
         {isLoading && (
-          <TableContainer component={Paper}>
+          <TableContainer component={Paper} sx={{ background: (t) => t.customColors?.cardBg }}>
             <Table>
               <TableHead>
                 <TableRow>
@@ -195,7 +187,7 @@ export default function Watchlist() {
             sx={{
               p: 6,
               textAlign: 'center',
-              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for empty state
+              background: (t) => t.customColors?.buttonSecondaryBg || 'rgba(255,255,255,0.05)',
             }}
           >
             <Typography variant="h6" color="text.secondary" sx={{ mb: 2 }}>
@@ -219,7 +211,7 @@ export default function Watchlist() {
             component={Paper}
             elevation={0}
             sx={{
-              background: 'rgba(232, 228, 243, 0.9)', // Purple tint for table
+              background: (t) => t.customColors?.cardBg || t.palette.background.paper,
               border: '2px solid',
               borderColor: 'primary.main',
             }}
@@ -249,7 +241,7 @@ export default function Watchlist() {
                         borderBottom: 'none',
                       },
                       '&:hover': {
-                        backgroundColor: 'rgba(108, 92, 231, 0.05)', // Purple hover
+                        backgroundColor: (t) => `${t.palette.primary.main}10`,
                       },
                     }}
                   >
